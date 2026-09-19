@@ -15,24 +15,13 @@ from pathlib import Path
 import pytest
 
 import control.gate2 as gate2
-from connectors.base import content_hash
 from memory.compile import is_stale, write_signed_rule
+from memory.seed_org_rules import ORG_03_FORBID_RESTART_DURING_BATCH as _ORG_03
 
 _POSTMORTEM_PATH = (
     Path(__file__).resolve().parent.parent / "memory" / "corpus" / "postmortems" / "2025-09-payments.md"
 )
 _POSTMORTEM_CONTENT = _POSTMORTEM_PATH.read_text(encoding="utf-8")
-
-_ORG_03 = {
-    "rule_id": "ORG-03",
-    "template": "forbid_tool_on_entity_during_window",
-    "slots": {"tool": "ecs.restart_service", "entity": "payments-api", "window": "batch"},
-    "source_ref": "gh:acme/infra/postmortems/2025-09-payments.md",
-    "source_hash": content_hash(_POSTMORTEM_CONTENT),
-    "status": "signed",
-    "approved_by": "sre-lead",
-    "approved_at": "2026-09-19T10:00:00Z",
-}
 
 
 def _restart_payments_action() -> dict:
