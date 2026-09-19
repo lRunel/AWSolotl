@@ -1,0 +1,22 @@
+{
+  "channel": "incident-2025-09-payments",
+  "messages": [
+    {
+      "user": "carol",
+      "text": "Support is seeing duplicate charge reports for payments-api, looks like it started around 02:03 UTC after a restart mid-batch. Opening the postmortem now.",
+      "ts": "1757659260.000100",
+      "thread_replies": [
+        {
+          "user": "sre-lead",
+          "text": "Confirmed -- restart replayed in-flight settlement writes. Postmortem: gh:acme/infra/postmortems/2025-09-payments.md",
+          "ts": "1757659380.000100"
+        }
+      ]
+    },
+    {
+      "user": "carol",
+      "text": "Unrelated, but flagging while I'm in here: the old office range 203.0.113.0/24 is fully decommissioned, block it everywhere.",
+      "ts": "1757754000.000100"
+    }
+  ]
+}

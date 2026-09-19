@@ -44,13 +44,19 @@ against, not just the incident-relevant ones:
 
 ## 1 Slack export
 
-`slack/incident-2025-09-payments.json` -- the incident channel thread for the
-payments postmortem above, plus one unrelated message: "the old office range
-203.0.113.0/24 is fully decommissioned, block it everywhere." That second
-message is the seed for the sixth template, `cidr_deny`, since none of the
-postmortems or ADRs naturally produce one (the generic `cidr_deny` case,
-0.0.0.0/0, is already covered by generic invariant INV-01 and doesn't need
-an org rule).
+`slack/incident-2025-09-payments.json` -- written for real. The incident
+channel thread for the payments postmortem above (one message, one thread
+reply), plus one unrelated message: "the old office range 203.0.113.0/24 is
+fully decommissioned, block it everywhere." That second message is the seed
+for the sixth template, `cidr_deny`, signed as ORG-07 and proven against
+Gate 2 in `control/test_gate2_org_rules_multi.py`.
+
+## ~30 PRs (GitHub connector fixtures)
+
+The GitHub connector (`connectors/github.py`) exists and is tested against a
+fake session, but the ~20/5/3/2-PR breakdown described above is not
+written as actual seed content -- it needs a real or fixture-recorded
+`owner/repo` to fetch from, which this environment doesn't have.
 
 ## Template coverage checklist
 
@@ -59,21 +65,23 @@ an org rule).
 - [x] `requires_precondition` -- postmortem 3 (`2025-03-rollback-data-loss.md`), signed as ORG-05, proven in `control/test_gate2_org_rules_multi.py`
 - [x] `min_count` -- ADR 1 (`0007-payments-quorum.md`); generic invariant INV-02 already covers this shape, no separate org rule compiled
 - [x] `freeze` -- ADR 2 (`0012-blackfriday-freeze.md`), signed as ORG-06, proven in `control/test_gate2_org_rules_multi.py`
-- [ ] `cidr_deny` -- Slack export, not written yet (the only remaining gap: no GitHub or Slack connector exists to ingest PRs or the Slack export, so that source type stays outline-only)
+- [x] `cidr_deny` -- Slack export, signed as ORG-07, proven in `control/test_gate2_org_rules_multi.py`
+
+All six templates are now compiled, signed, and proven against a real
+Gate 2.
 
 ## Status
 
-All 5 markdown documents are written for real, and 4 of the 6 templates
-(`forbid_tool_on_entity_during_window`, `requires_human`,
-`requires_precondition`, `freeze`) are compiled, signed, and proven against
-a real Gate 2 -- including all four loaded into one `PolicySet` together
-alongside the twelve generic invariants, confirming they don't cross-fire on
-unrelated actions. These four `Rule` records (ORG-03 through ORG-06) are
-hand-authored rather than LLM-extracted, since `memory/extract.py` needs
-Bedrock access this environment doesn't have; compiling, signing, and
-enforcing them is otherwise the real I3 pipeline, not a stub.
+All 5 markdown documents plus the Slack export are written for real (6
+source documents total). Five org rules (ORG-03 through ORG-07) are
+compiled, signed, and proven against a real Gate 2, all loaded into one
+`PolicySet` together alongside the twelve generic invariants, confirming
+they don't cross-fire on unrelated actions. These are hand-authored rather
+than LLM-extracted, since `memory/extract.py` needs Bedrock access this
+environment doesn't have; compiling, signing, and enforcing them is
+otherwise the real I3 pipeline, not a stub.
 
-The ~30 PRs and the 1 Slack export are still not written: they need a
-GitHub connector and a Slack connector, neither of which exists yet
-(I2, not started), and `cidr_deny` has no real source document until the
-Slack export exists.
+The GitHub and Slack connectors both exist now (`connectors/github.py`,
+`connectors/slack_export.py`). The only remaining corpus gap is the ~30 PR
+fixture set described above, since it needs a real or recorded repo to
+source from.

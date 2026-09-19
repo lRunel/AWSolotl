@@ -4,4 +4,6 @@
 
 `connectors/github.py` fetches pull requests (paginated, `per_page=100`, backing off on `X-RateLimit-Reset` when `X-RateLimit-Remaining` hits zero) given `workspace_id="owner/repo"`. Tested entirely against a fake `requests.Session` -- no real network calls or rate-limit spend. Does not fetch ADR markdown from a repo path (person-b-brief.md's "GitHub (PRs, ADR markdown)" is split: this file is the PR half, `connectors/postmortem.py` covers ADRs from local files instead). Breaks if GitHub ever changes pagination past `page`/`per_page` query params, or if a PR's `body` is `None` and a caller assumes a string without the same null-check this module already does.
 
-Slack export connector is not started.
+`connectors/slack_export.py` reads a Slack **export** file (`memory/corpus/slack/*.json`), not a live Slack API -- no auth, no rate limits, per the design doc's 3-connector scope cut. One `SourceChunk` per top-level message, with any `thread_replies` folded into its content so a reply is never anchored or scanned separately from the message it replies to. Breaks if an export file's `ts` isn't a valid Unix-epoch string, or if two messages in the same file share a `ts` (their chunk ids would collide).
+
+All three connectors named in person-b-brief.md task 8 now exist.

@@ -1,9 +1,8 @@
-"""Extends test_gate2_org_rules.py's single-rule (ORG-03) scenario to four
+"""Extends test_gate2_org_rules.py's single-rule (ORG-03) scenario to five
 signed rules loaded together -- one per real corpus document besides ORG-03
-itself (the fifth template, cidr_deny, has no real source yet since it
-needs the Slack export connector). This is closer to what Gate 2 will
-actually see in the demo: several org rules plus the twelve generic
-invariants, all in one PolicySet, each firing only for its own action.
+itself. This is closer to what Gate 2 will actually see in the demo:
+several org rules plus the twelve generic invariants, all in one PolicySet,
+each firing only for its own action.
 """
 from __future__ import annotations
 
@@ -55,7 +54,20 @@ ORG_06_FREEZE = {
     "approved_at": "2026-09-19T10:00:00Z",
 }
 
-ALL_ORG_RULES = [ORG_04_REQUIRES_HUMAN, ORG_05_REQUIRES_PRECONDITION, ORG_06_FREEZE]
+ORG_07_CIDR_DENY = {
+    "rule_id": "ORG-07",
+    "template": "cidr_deny",
+    "slots": {"cidr": "203.0.113.0/24", "ports": "any"},
+    "source_ref": "slack:incident-2025-09-payments#1757754000.000100",
+    "source_hash": content_hash(
+        "the old office range 203.0.113.0/24 is fully decommissioned, block it everywhere."
+    ),
+    "status": "signed",
+    "approved_by": "sre-lead",
+    "approved_at": "2026-09-19T10:00:00Z",
+}
+
+ALL_ORG_RULES = [ORG_04_REQUIRES_HUMAN, ORG_05_REQUIRES_PRECONDITION, ORG_06_FREEZE, ORG_07_CIDR_DENY]
 
 
 def _action(tool: str, entity: str) -> dict:
@@ -139,6 +151,32 @@ def test_prod_change_during_freeze_with_override_passes(org_dir_with_all_rules: 
         action=_action("ecs.scale", "cart-api"),
         ctx={"env": "prod", "current_window": "blackfriday", "human_override": True},
     )
+    assert result["decision"] == "pass"
+
+
+def _sg_ingress_action(cidr: str, port: int = 22) -> dict:
+    return {
+        "tool": "sg.authorize_ingress",
+        "args": {"security_group_id": "sg-1", "cidr": cidr, "port": port},
+        "blast_radius": {
+            "accounts": ["123456789012"],
+            "region": "us-east-1",
+            "arns": ["arn:aws:ec2:us-east-1:123456789012:security-group/sg-1"],
+            "max_tasks": 0,
+            "data_destructive": False,
+        },
+    }
+
+
+def test_ingress_from_decommissioned_range_is_denied(org_dir_with_all_rules: Path) -> None:
+    result = gate2.gate2_check(plan={}, action=_sg_ingress_action("203.0.113.0/24"), ctx={})
+    assert result["decision"] == "deny"
+    assert result["invariant"] == "ORG-07"
+    assert result["citation"]["source_ref"] == "slack:incident-2025-09-payments#1757754000.000100"
+
+
+def test_ingress_from_other_ranges_passes(org_dir_with_all_rules: Path) -> None:
+    result = gate2.gate2_check(plan={}, action=_sg_ingress_action("10.0.0.0/8"), ctx={})
     assert result["decision"] == "pass"
 
 

@@ -35,10 +35,16 @@ permission, which is the one thing the trust ladder exists to prevent.
 - `memory/ingest.py`: connector -> anchor -> injection scan -> store,
   producing schema-valid `MemoryItem`s at `trust_level` 0. Flagged content is
   still stored, never dropped, per the trust ladder.
-- `memory/corpus/{postmortems,adrs}/*.md`: all 5 outlined markdown documents
-  are now written for real (3 postmortems, 2 ADRs -- see
-  `memory/CORPUS_OUTLINE.md`'s status section). The ~30 PRs and 1 Slack
-  export are not written, since they need connectors that don't exist yet.
+- `memory/corpus/{postmortems,adrs,slack}/*`: all 6 outlined source
+  documents are now written for real (3 postmortems, 2 ADRs, 1 Slack
+  export -- see `memory/CORPUS_OUTLINE.md`'s status section). Only the ~30
+  PR fixture set is not written, since it needs a real or recorded repo.
+- `connectors/github.py`: pull requests only (paginated, rate-limit
+  backoff), tested against a fake session, no real network calls.
+- `connectors/slack_export.py`: reads an exported channel JSON file, one
+  chunk per top-level message with thread replies folded in. Not a live
+  Slack API connector (no OAuth, no rate limits) per the design doc's
+  "3 connectors" scope cut.
 - `extract.py` (LLM slot-filling, I3) is not started -- blocked on Bedrock access, same as the I0 spike.
 
 ## I3 status (in progress)
@@ -68,13 +74,13 @@ permission, which is the one thing the trust ladder exists to prevent.
   action outside the window passes, an unsigned candidate is refused at
   write time, and editing the source flips the rule stale.
 - `control/test_gate2_org_rules_multi.py` extends this to ORG-04
-  (`requires_human`), ORG-05 (`requires_precondition`), and ORG-06
-  (`freeze`), all four org rules loaded into one `PolicySet` together
+  (`requires_human`), ORG-05 (`requires_precondition`), ORG-06 (`freeze`),
+  and ORG-07 (`cidr_deny`, signed from the real Slack export content), all
+  five org rules (with ORG-03) loaded into one `PolicySet` together
   alongside the twelve generic invariants, proving they don't cross-fire on
-  unrelated actions. 4 of 6 templates are now proven end-to-end against a
-  real Gate 2; `min_count` only exists as a round-trip test (generic
-  invariant INV-02 already covers that shape) and `cidr_deny` has no real
-  source document yet (needs the Slack export).
+  unrelated actions. 5 of 6 templates are now proven end-to-end against a
+  real Gate 2; `min_count` only exists as a round-trip test since generic
+  invariant INV-02 already covers that shape.
 - Not done: the rule-review panel (task 15), and the hand-labelled
   15-candidate acceptance rate (needs real extraction, which needs Bedrock
   access this environment doesn't have).
