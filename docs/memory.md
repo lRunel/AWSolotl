@@ -21,13 +21,22 @@ permission, which is the one thing the trust ladder exists to prevent.
 
 ## I2 status (in progress)
 
-- `memory/anchor.py`: regex-first entity anchoring, ordered by first
-  appearance in text. `KNOWN_SERVICES` is a hand-seeded placeholder list --
-  swap it for the real dictionary built from Person A's `/lockstep/*` CDK
-  outputs once those exist. The "model only for ambiguity" fallback is not
+- `memory/anchor.py`: regex-first entity *and tool* anchoring (`anchor_entities`,
+  `anchor_tools`), ordered by first appearance in text. `KNOWN_SERVICES` is a
+  hand-seeded placeholder list -- swap it for the real dictionary built from
+  Person A's `/lockstep/*` CDK outputs once those exist. Tool anchoring only
+  finds a tool the document names literally (e.g. `` `ecs.scale` ``); it
+  cannot infer a tool from prose like "restarted the service". The "model
+  only for ambiguity" fallback for either kind of anchoring is not
   implemented.
+- `memory/store.py`: in-memory `MemoryItemStore` only. The real store is
+  DynamoDB (`infra/brain_stack.py`, not started) -- this exists so
+  `ingest.py` and its tests don't need an AWS account.
+- `memory/ingest.py`: connector -> anchor -> injection scan -> store,
+  producing schema-valid `MemoryItem`s at `trust_level` 0. Flagged content is
+  still stored, never dropped, per the trust ladder.
 - `memory/corpus/{postmortems,adrs}/*.md`: 2 of the 5 outlined documents
   written for real (`2025-09-payments.md`, `0007-payments-quorum.md`); the
   rest of the outline (2 more postmortems, 1 more ADR, ~30 PRs, 1 Slack
   export) is not written yet.
-- `ingest.py`, `extract.py`, `compile.py`, `store.py` are not started.
+- `extract.py`, `compile.py` (I3) are not started.

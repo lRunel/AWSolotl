@@ -44,3 +44,27 @@ def anchor_entities(content: str, known_services: list[str] | None = None) -> li
             seen.add(entity_id)
             ordered.append(entity_id)
     return ordered
+
+
+def anchor_tools(content: str, known_tools: list[str]) -> list[str]:
+    """Same regex-first, order-preserving approach as `anchor_entities`, but
+    for tool ids (`schemas/rule.schema.json`'s `slots.tool`, MemoryItem's
+    `tool_ids`). Only finds a tool when the document literally names it
+    (e.g. a corrective action written as `` `ecs.scale` ``); it will not
+    infer a tool from prose like "restarted the service" -- that inference
+    is the "model for ambiguity" half of anchoring, not implemented here.
+    """
+    matches: list[tuple[int, str]] = []
+    for tool in known_tools:
+        found = re.search(rf"\b{re.escape(tool)}\b", content)
+        if found:
+            matches.append((found.start(), tool))
+    matches.sort(key=lambda pair: pair[0])
+
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for _, tool_id in matches:
+        if tool_id not in seen:
+            seen.add(tool_id)
+            ordered.append(tool_id)
+    return ordered

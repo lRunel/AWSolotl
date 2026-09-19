@@ -54,3 +54,10 @@ def list_agent_tools(stage: Optional[str] = None) -> list[ToolSpec]:
     if stage is not None:
         tools = [t for t in tools if t.get("stage") == stage]
     return tools
+
+
+def list_all_tool_names() -> list[str]:
+    """Every registered tool name, including red-team tier -- used by
+    entity/tool anchoring (memory/anchor.py), which needs the full
+    vocabulary a document might reference, not just what an agent may call."""
+    return [t["tool"] for t in _load_registry()]
