@@ -1,3 +1,5 @@
 # Gate 2 -- formal policy proof
 
-I0 stub only: `gate2_check` always returns `decision: pass` behind `LOCKSTEP_STUB=1`, so Person A's orchestrator can wire Gates 1-5 before Cedar invariants exist. Depends on `schemas/gate_result.schema.json`. Breaks if `LOCKSTEP_STUB` is unset before `invariants/generic/*.cedar` and a Cedar loader are actually implemented -- it will raise `NotImplementedError` by design rather than silently pass.
+`gate2_check` loads the twelve generic invariants from `invariants/generic/*.cedar` once at import time and evaluates them as a pure function of `(plan, action, ctx)` via `cedarpy`; org rules (`invariants/org/*.cedar`) are I3 work and not wired in yet. Depends on `schemas/gate_result.schema.json` and `schemas/deny_reason.schema.json` for the citation shape. Breaks if a new invariant's `@id` annotation is missing or duplicated (the deny's `invariant` field comes straight from `diagnostics.id_annotations_by_reason`), or if `context` ever omits a default for a field an invariant reads (Cedar errors on a missing attribute rather than treating it as absent).
+
+Set `LOCKSTEP_STUB=1` to force the I0 fixed-pass stub instead of real Cedar evaluation -- kept as the demo's fixture-mode fallback per `references/branching.md`, never deleted.
