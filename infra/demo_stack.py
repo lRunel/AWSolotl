@@ -112,19 +112,4 @@ class DemoStack(Stack):
             task_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC)
         )
         
-        # 100% X-Ray Sampling Rule
-        xray.CfnSamplingRule(
-            self, "DemoSamplingRule",
-            sampling_rule=xray.CfnSamplingRule.SamplingRuleProperty(
-                fixed_rate=1.0,
-                host="*",
-                http_method="*",
-                priority=1,
-                reservoir_size=1000,
-                resource_arn="*",
-                service_name="*",
-                service_type="*",
-                url_path="*",
-                version=1
-            )
-        )
+
