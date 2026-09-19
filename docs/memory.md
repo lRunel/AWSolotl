@@ -32,6 +32,9 @@ permission, which is the one thing the trust ladder exists to prevent.
 - `memory/store.py`: in-memory `MemoryItemStore` only. The real store is
   DynamoDB (`infra/brain_stack.py`, not started) -- this exists so
   `ingest.py` and its tests don't need an AWS account.
+  `precedent_stats(entity, tool)` (I4) feeds Gate 4's risk score: a
+  postmortem item mentioning both raises `historical_failure_rate`; an ADR
+  or any other source type is read as neutral history, not a failure.
 - `memory/ingest.py`: connector -> anchor -> injection scan -> store,
   producing schema-valid `MemoryItem`s at `trust_level` 0. Flagged content is
   still stored, never dropped, per the trust ladder.
@@ -84,3 +87,10 @@ permission, which is the one thing the trust ladder exists to prevent.
 - Not done: the rule-review panel (task 15), and the hand-labelled
   15-candidate acceptance rate (needs real extraction, which needs Bedrock
   access this environment doesn't have).
+
+## I4 status (in progress)
+
+- `control/gate4.py`: real risk scoring, see `docs/gate4.md`. Precedents
+  only ever raise the score; there is no code path from a memory lookup to
+  a `pass`. Not done: causal-lite (`causal/**`), the router and Bedrock
+  agent (`agents/**`), ledger-to-episodes indexing, and `ui/ask.js`.

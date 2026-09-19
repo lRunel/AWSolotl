@@ -21,3 +21,28 @@ class MemoryItemStore:
 
     def list_all(self) -> list[dict]:
         return list(self._items.values())
+
+    def precedent_stats(self, entity: str, tool: str) -> tuple[float, float]:
+        """Advisory-only precedent lookup for Gate 4 (control/gate4.py):
+        returns (historical_failure_rate, novelty). A postmortem item is
+        read as "something went wrong here before"; an ADR or any other
+        source type mentioning the entity is read as neutral history, not a
+        failure. This never returns anything a gate could treat as a grant
+        -- both numbers only ever feed a risk score that can raise risk or
+        force human review, per the trust ladder.
+        """
+        mentioning_entity = [item for item in self._items.values() if entity in item["entity_ids"]]
+        if not mentioning_entity:
+            return 0.0, 1.0  # no history at all: max novelty, no known failure
+
+        failures = [
+            item
+            for item in mentioning_entity
+            if item["source_type"] == "postmortem" and tool in item["tool_ids"]
+        ]
+        failure_rate = len(failures) / len(mentioning_entity)
+
+        # seen_count is always >= 1 here; the seen_count == 0 case already
+        # returned above with max novelty.
+        novelty = 0.0 if len(mentioning_entity) >= 3 else 0.5
+        return failure_rate, novelty
