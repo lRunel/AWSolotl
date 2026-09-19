@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/ecs_rollback_to_revision.schema.json",
+  "title": "ecs.rollback_to_revision args",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cluster", "service", "to_revision"],
+  "properties": {
+    "cluster": { "type": "string" },
+    "service": { "type": "string" },
+    "to_revision": { "type": "integer", "minimum": 1 }
+  }
+}

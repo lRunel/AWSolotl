@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/sg_revoke_ingress.schema.json",
+  "title": "sg.revoke_ingress args",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["security_group_id", "cidr", "port"],
+  "properties": {
+    "security_group_id": { "type": "string" },
+    "cidr": { "type": "string" },
+    "port": { "type": "integer", "minimum": 0, "maximum": 65535 }
+  }
+}

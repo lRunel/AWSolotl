@@ -1,0 +1,5 @@
+# Sensors -- injection scanner
+
+`injection_scan` checks ingested text against a heuristic phrase list (imperative overrides like "ignore instructions", "grant admin access"); `wrap_untrusted` delimiter-wraps and length-caps text before it nears a prompt. Used by ingest (`memory/**`) and Person A's Gate 5 watchdog. Breaks if a caller ever treats a flagged result as an instruction to follow rather than a tag to store (`injection_flag`) and continue past -- flagging never blocks storage or grants anything.
+
+Found and fixed a real false negative while validating against the ~30-PR fixture corpus: the `ignore`/`disregard` patterns each allowed only one optional qualifier word, so "disregard **the previous** instructions" (two stacked qualifiers) slipped through undetected. Both patterns now tolerate up to 5 filler words between the verb and its target. This scanner is a heuristic, not a proof -- treat any future false negative the same way: fix the pattern, add the exact failing text as a regression test (`control/test_sensors.py`), don't assume the list is complete.

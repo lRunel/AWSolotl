@@ -1,0 +1,118 @@
+/* Shared stylesheet (contracts.md: append-only sections marked with owner
+   comments -- see branching.md's shared-path protocol before restructuring
+   anything below rather than appending to it). */
+
+/* OWNER: B -- base layout + the rule-review and ask-why panels. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, "Segoe UI", sans-serif;
+  margin: 0;
+  color: #1a1a1a;
+  background: #fafafa;
+}
+
+header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+}
+
+header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+#tabs button {
+  padding: 0.4rem 0.9rem;
+  margin-right: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+#tabs button:hover {
+  background: #e4e4e4;
+}
+
+.tab-panel {
+  padding: 1.5rem;
+}
+
+.placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+.rules-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.rules-table th,
+.rules-table td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+
+.rule-source-snippet {
+  max-width: 28ch;
+  white-space: pre-wrap;
+  color: #555;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+}
+
+.rule-row--candidate {
+  background: #fff8e1;
+}
+
+.rule-row--stale {
+  background: #fdecea;
+}
+
+.rules-table button {
+  margin-right: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+}
+
+.ask-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.ask-form input {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.ask-answer {
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+.ask-answer--cited {
+  border-left: 4px solid #2e7d32;
+}
+
+.ask-answer--unknown {
+  border-left: 4px solid #999;
+  color: #555;
+}
+
+/* OWNER: A -- gate panel + ledger styles land here once ui/gates.js and
+   ui/ledger.js exist. Append below this line; do not restructure the
+   rules above it without going through branching.md's shared-path
+   protocol. */

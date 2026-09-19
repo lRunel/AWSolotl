@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Lockstep Recall</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <header>
+    <h1>Lockstep Recall</h1>
+    <nav id="tabs">
+      <button data-tab="gates">Gate panel</button>
+      <button data-tab="ledger">Ledger</button>
+      <button data-tab="rules">Rule review</button>
+      <button data-tab="ask">Ask why</button>
+    </nav>
+  </header>
+
+  <!-- OWNER: A -- gate panel + ledger verify (ui/gates.js, ui/ledger.js).
+       Neither file exists yet, so these tabs render a placeholder instead
+       of a broken <script> reference. Replace this comment block, not the
+       tab buttons above, once those land. -->
+  <main id="tab-gates" class="tab-panel" hidden>
+    <p class="placeholder">Gate panel not implemented yet (ui/gates.js, Person A).</p>
+  </main>
+  <main id="tab-ledger" class="tab-panel" hidden>
+    <p class="placeholder">Ledger verify not implemented yet (ui/ledger.js, Person A).</p>
+  </main>
+
+  <!-- OWNER: B -- rule review + ask-why (ui/rules.js, ui/ask.js). -->
+  <main id="tab-rules" class="tab-panel" hidden></main>
+  <main id="tab-ask" class="tab-panel" hidden></main>
+
+  <script type="module">
+    import { renderRulePanel } from "./rules.js";
+    import { renderAskPanel } from "./ask.js";
+
+    const tabs = document.querySelectorAll("#tabs button");
+    const panels = document.querySelectorAll(".tab-panel");
+    let rulesRendered = false;
+    let askRendered = false;
+
+    function showTab(name) {
+      for (const panel of panels) {
+        panel.hidden = panel.id !== `tab-${name}`;
+      }
+      if (name === "rules" && !rulesRendered) {
+        rulesRendered = true;
+        renderRulePanel(document.getElementById("tab-rules"));
+      }
+      if (name === "ask" && !askRendered) {
+        askRendered = true;
+        renderAskPanel(document.getElementById("tab-ask"));
+      }
+    }
+
+    for (const tab of tabs) {
+      tab.addEventListener("click", () => showTab(tab.dataset.tab));
+    }
+    showTab("gates");
+  </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Gate 2 -- formal policy proof
+
+`gate2_check` evaluates a pure function of `(plan, action, ctx)` via `cedarpy`: the twelve generic invariants from `invariants/generic/*.cedar` (cached at import time, frozen I1 policy) plus any signed org rules from `invariants/org/*.cedar` (re-read on every call, since a rule can be approved or go stale without a redeploy). A deny's `citation` is populated from the matching `invariants/org/<id>.meta.json` sidecar that `memory/compile.py:write_signed_rule` writes alongside the compiled policy. Depends on `schemas/gate_result.schema.json` and `schemas/deny_reason.schema.json`. Breaks if a new invariant's `@id` annotation is missing or duplicated, or if `context` ever omits a default for a field an invariant/org rule reads (Cedar errors on a missing attribute rather than treating it as absent).
+
+Set `LOCKSTEP_STUB=1` to force the I0 fixed-pass stub instead of real Cedar evaluation -- kept as the demo's fixture-mode fallback per `references/branching.md`, never deleted.

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "memory_item.schema.json",
+  "title": "MemoryItem",
+  "description": "An ingested, entity-anchored chunk. trust_level is the whole security model of the memory plane in one field: 0 raw (no effect), 1 precedent (advisory only), 2 candidate rule (no effect until approved), 3 signed (enforced).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "item_id",
+    "source_type",
+    "url",
+    "content_hash",
+    "entity_ids",
+    "tool_ids",
+    "trust_level",
+    "injection_flag"
+  ],
+  "properties": {
+    "item_id": { "type": "string" },
+    "source_type": {
+      "type": "string",
+      "enum": ["github_pr", "postmortem", "adr", "slack_message"]
+    },
+    "url": { "type": "string" },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "entity_ids": { "type": "array", "items": { "type": "string" } },
+    "tool_ids": { "type": "array", "items": { "type": "string" } },
+    "trust_level": { "type": "integer", "enum": [0, 1, 2, 3] },
+    "injection_flag": { "type": "boolean" }
+  }
+}

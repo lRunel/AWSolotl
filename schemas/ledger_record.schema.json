@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ledger_record.schema.json",
+  "title": "LedgerRecord",
+  "description": "Owned by Person A (control/ledger.py). Included here because Person B's episode indexing (I4) and Ask-why read this shape directly.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_id",
+    "prev_hash",
+    "incident_id",
+    "action",
+    "gates",
+    "rules_applied",
+    "result",
+    "actor",
+    "hash"
+  ],
+  "properties": {
+    "record_id": { "type": "integer", "minimum": 0 },
+    "prev_hash": { "type": "string" },
+    "incident_id": { "type": "string" },
+    "action": { "type": "object" },
+    "gates": { "type": "object" },
+    "rules_applied": { "type": "array", "items": { "type": "string" } },
+    "causal_basis": { "type": "object" },
+    "diff": { "type": "object" },
+    "result": { "type": "string" },
+    "actor": { "type": "string" },
+    "hash": { "type": "string" }
+  }
+}

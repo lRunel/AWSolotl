@@ -1,0 +1,103 @@
+{
+  "records": [
+    {
+      "record_id": 1,
+      "prev_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "incident_id": "inc_7f3",
+      "action": {
+        "tool": "ecs.rollback_to_revision",
+        "args": {
+          "cluster": "demo",
+          "service": "payments-api",
+          "to_revision": 11
+        }
+      },
+      "gates": {
+        "authority": "pass",
+        "proof": "pass 12/12",
+        "radius": "pass",
+        "risk": 0.21,
+        "autonomy": "L2",
+        "watchdog": "clean"
+      },
+      "rules_applied": [
+        "INV-02"
+      ],
+      "causal_basis": {
+        "entity": "ecs/payments-api",
+        "conf": 0.87,
+        "p": 0.004
+      },
+      "result": "SLO recovered T+94s",
+      "actor": "agent:remediate-1",
+      "hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "record_id": 2,
+      "prev_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "incident_id": "inc_8a1",
+      "action": {
+        "tool": "ecs.restart_service",
+        "args": {
+          "cluster": "demo",
+          "service": "cart-api"
+        }
+      },
+      "gates": {
+        "authority": "pass",
+        "proof": "pass 12/12",
+        "radius": "pass",
+        "risk": 0.35,
+        "autonomy": "L1",
+        "watchdog": "halted at step 2"
+      },
+      "rules_applied": [],
+      "causal_basis": {
+        "entity": "ecs/cart-api",
+        "conf": 0.61,
+        "p": 0.03
+      },
+      "result": "watchdog halted: made it worse, rolled back",
+      "actor": "agent:remediate-2",
+      "hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ],
+  "episodes": [
+    {
+      "ledger_record_id": 1,
+      "entity_ids": [
+        "ecs/payments-api"
+      ],
+      "tool": "ecs.rollback_to_revision",
+      "outcome": "good",
+      "gate_summary": {
+        "authority": "pass",
+        "proof": "pass 12/12",
+        "radius": "pass",
+        "risk": 0.21,
+        "autonomy": "L2",
+        "watchdog": "clean"
+      },
+      "rule_ids_applied": [
+        "INV-02"
+      ]
+    },
+    {
+      "ledger_record_id": 2,
+      "entity_ids": [
+        "ecs/cart-api"
+      ],
+      "tool": "ecs.restart_service",
+      "outcome": "bad",
+      "gate_summary": {
+        "authority": "pass",
+        "proof": "pass 12/12",
+        "radius": "pass",
+        "risk": 0.35,
+        "autonomy": "L1",
+        "watchdog": "halted at step 2"
+      },
+      "rule_ids_applied": []
+    }
+  ]
+}

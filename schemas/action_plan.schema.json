@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "action_plan.schema.json",
+  "title": "ActionPlan",
+  "description": "Produced by Person B's agent, consumed by Person A's orchestrator. Untrusted input to Plane 3.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["plan_id", "incident_id", "stage", "schema_version", "actions"],
+  "properties": {
+    "plan_id": { "type": "string" },
+    "incident_id": { "type": "string" },
+    "stage": {
+      "type": "string",
+      "enum": ["contain", "preserve", "remediate", "harden", "restore"]
+    },
+    "schema_version": { "type": "integer", "const": 1 },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Action" }
+    }
+  },
+  "$defs": {
+    "Action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "tool",
+        "args",
+        "blast_radius",
+        "rollback",
+        "expected_effect",
+        "justification_ref"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "tool": { "type": "string", "pattern": "^[a-z0-9_]+\\.[a-z0-9_]+$" },
+        "args": { "type": "object" },
+        "blast_radius": { "$ref": "blast_radius.schema.json" },
+        "rollback": { "$ref": "rollback.schema.json" },
+        "expected_effect": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["metric", "direction", "within_s"],
+          "properties": {
+            "metric": { "type": "string" },
+            "direction": { "type": "string", "enum": ["up", "down"] },
+            "threshold_ms": { "type": "number" },
+            "within_s": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "justification_ref": { "type": "string" }
+      }
+    }
+  }
+}

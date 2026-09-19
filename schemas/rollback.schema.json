@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rollback.schema.json",
+  "title": "Rollback",
+  "description": "The registered tool and args that undo an action. Must itself pass Gate 1's schema check.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tool", "args"],
+  "properties": {
+    "tool": { "type": "string" },
+    "args": { "type": "object" }
+  }
+}

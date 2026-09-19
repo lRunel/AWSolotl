@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "blast_radius.schema.json",
+  "title": "BlastRadius",
+  "description": "The scope an action declares it will touch. Gate 3 checks the real, simulated diff is a subset of this.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["accounts", "region", "arns", "max_tasks", "data_destructive"],
+  "properties": {
+    "accounts": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[0-9]{12}$" },
+      "minItems": 1
+    },
+    "region": { "type": "string", "const": "us-east-1" },
+    "arns": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^arn:aws:" },
+      "minItems": 1
+    },
+    "max_tasks": { "type": "integer", "minimum": 0 },
+    "data_destructive": { "type": "boolean" }
+  }
+}

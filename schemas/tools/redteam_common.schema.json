@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/redteam_common.schema.json",
+  "title": "red-team tool args (never executed)",
+  "description": "Placeholder args schema shared by the red-team tier. These tools exist only so Gate 2 can be exercised against them in BrakeBench; ExecRole grants none of the underlying permissions and no agent tool list ever includes them.",
+  "type": "object",
+  "additionalProperties": true
+}

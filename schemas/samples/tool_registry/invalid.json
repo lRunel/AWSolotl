@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "tools": [
+    {
+      "tool": "ddb.delete_table",
+      "tier": "red-team",
+      "stage": null,
+      "args_schema": { "type": "object", "additionalProperties": true },
+      "simulator": "cedar_only",
+      "executor_action": "dynamodb:DeleteTable",
+      "rollback": "n/a",
+      "exposed_to_agent": true
+    }
+  ]
+}

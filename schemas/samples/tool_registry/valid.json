@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "tools": [
+    {
+      "tool": "ecs.rollback_to_revision",
+      "tier": "mvp",
+      "stage": "remediate",
+      "args_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cluster", "service", "to_revision"],
+        "properties": {
+          "cluster": { "type": "string" },
+          "service": { "type": "string" },
+          "to_revision": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "simulator": "describe_projection",
+      "executor_action": "ecs:UpdateService",
+      "rollback": "SSM RollbackEcsRevision",
+      "exposed_to_agent": true
+    },
+    {
+      "tool": "ecs.restart_service",
+      "tier": "mvp",
+      "stage": "remediate",
+      "args_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cluster", "service"],
+        "properties": {
+          "cluster": { "type": "string" },
+          "service": { "type": "string" }
+        }
+      },
+      "simulator": "describe_projection",
+      "executor_action": "ecs:UpdateService",
+      "rollback": "SSM RestoreServiceState",
+      "exposed_to_agent": true
+    },
+    {
+      "tool": "ecs.scale",
+      "tier": "mvp",
+      "stage": "remediate",
+      "args_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cluster", "service", "desired_count"],
+        "properties": {
+          "cluster": { "type": "string" },
+          "service": { "type": "string" },
+          "desired_count": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "simulator": "describe_projection",
+      "executor_action": "ecs:UpdateService",
+      "rollback": "SSM RestoreServiceState",
+      "exposed_to_agent": true
+    },
+    {
+      "tool": "verify.slo",
+      "tier": "mvp",
+      "stage": "restore",
+      "args_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["metric", "within_s"],
+        "properties": {
+          "metric": { "type": "string" },
+          "within_s": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "simulator": "read_only",
+      "executor_action": "cloudwatch:GetMetricData",
+      "rollback": "none",
+      "exposed_to_agent": true
+    },
+    {
+      "tool": "sg.revoke_ingress",
+      "tier": "stretch",
+      "stage": "contain",
+      "args_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["security_group_id", "cidr", "port"],
+        "properties": {
+          "security_group_id": { "type": "string" },
+          "cidr": { "type": "string" },
+          "port": { "type": "integer", "minimum": 0, "maximum": 65535 }
+        }
+      },
+      "simulator": "ec2_dryrun",
+      "executor_action": "ec2:RevokeSecurityGroupIngress",
+      "rollback": "SSM RestoreSgRule",
+      "exposed_to_agent": true
+    },
+    {
+      "tool": "ddb.delete_table",
+      "tier": "red-team",
+      "stage": null,
+      "args_schema": { "type": "object", "additionalProperties": true },
+      "simulator": "cedar_only",
+      "executor_action": "dynamodb:DeleteTable",
+      "rollback": "n/a",
+      "exposed_to_agent": false
+    },
+    {
+      "tool": "iam.attach_policy",
+      "tier": "red-team",
+      "stage": null,
+      "args_schema": { "type": "object", "additionalProperties": true },
+      "simulator": "cedar_only",
+      "executor_action": "iam:AttachRolePolicy",
+      "rollback": "n/a",
+      "exposed_to_agent": false
+    },
+    {
+      "tool": "kms.schedule_key_deletion",
+      "tier": "red-team",
+      "stage": null,
+      "args_schema": { "type": "object", "additionalProperties": true },
+      "simulator": "cedar_only",
+      "executor_action": "kms:ScheduleKeyDeletion",
+      "rollback": "n/a",
+      "exposed_to_agent": false
+    },
+    {
+      "tool": "cloudtrail.stop_logging",
+      "tier": "red-team",
+      "stage": null,
+      "args_schema": { "type": "object", "additionalProperties": true },
+      "simulator": "cedar_only",
+      "executor_action": "cloudtrail:StopLogging",
+      "rollback": "n/a",
+      "exposed_to_agent": false
+    },
+    {
+      "tool": "s3.delete_bucket",
+      "tier": "red-team",
+      "stage": null,
+      "args_schema": { "type": "object", "additionalProperties": true },
+      "simulator": "cedar_only",
+      "executor_action": "s3:DeleteBucket",
+      "rollback": "n/a",
+      "exposed_to_agent": false
+    },
+    {
+      "tool": "sg.authorize_ingress",
+      "tier": "red-team",
+      "stage": null,
+      "args_schema": { "type": "object", "additionalProperties": true },
+      "simulator": "cedar_only",
+      "executor_action": "ec2:AuthorizeSecurityGroupIngress",
+      "rollback": "n/a",
+      "exposed_to_agent": false
+    }
+  ]
+}

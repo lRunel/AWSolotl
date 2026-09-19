@@ -1,0 +1,4 @@
+{
+  "tool": "ecs.rollback_to_revision",
+  "args": { "cluster": "demo", "service": "payments-api", "to_revision": 12 }
+}

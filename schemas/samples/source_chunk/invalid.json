@@ -1,0 +1,10 @@
+{
+  "id": "pm_2025-09-payments",
+  "source_type": "wiki_page",
+  "content": "At 02:03 we restarted payments-api during the nightly batch window...",
+  "url": "gh:acme/infra/postmortems/2025-09-payments.md",
+  "author": "sre-lead",
+  "created_at": "2025-09-12T02:15:00Z",
+  "content_hash": "sha256:not-a-real-hash",
+  "metadata": { "repo": "acme/infra" }
+}
