@@ -39,4 +39,27 @@ permission, which is the one thing the trust ladder exists to prevent.
   written for real (`2025-09-payments.md`, `0007-payments-quorum.md`); the
   rest of the outline (2 more postmortems, 1 more ADR, ~30 PRs, 1 Slack
   export) is not written yet.
-- `extract.py`, `compile.py` (I3) are not started.
+- `extract.py` (LLM slot-filling, I3) is not started -- blocked on Bedrock access, same as the I0 spike.
+
+## I3 status (in progress)
+
+- `memory/compile.py`: `compile_rule` turns a candidate's `template` + `slots`
+  into Cedar text with `@id`/`@source`/`@approved_by`/`@approved_at`
+  annotations, for all six closed-vocabulary templates. Rejects (raises
+  `ValueError`) a template outside the vocabulary or slots that don't match
+  it -- it never guesses. 16 round-trip tests prove each compiled rule denies
+  exactly its slots and permits everything else.
+- Cedar text always reads from a small, closed set of `context` fields
+  (`entity`, `current_window`, `human_approved`, `precondition_met`,
+  `human_override`, `env`, `new_count`, `cidr`) rather than a dynamically
+  named field per rule, so every compiled rule stays well-defined under
+  Cedar's missing-attribute-is-an-error semantics regardless of what a human
+  writes into a slot.
+- `write_signed_rule` refuses anything not already `status: signed`, and
+  writes both the compiled `.cedar` file and a `.meta.json` citation sidecar
+  (`source_ref`, `approved_by`, a human-readable `why`) to `invariants/org/`.
+- `is_stale` flips a rule to advisory once its source document's hash no
+  longer matches what was approved.
+- Not done: Gate 2 loading `invariants/org/*.cedar` (task 14), the
+  rule-review panel (task 15), and the hand-labelled 15-candidate acceptance
+  rate.
