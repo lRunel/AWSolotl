@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "tool", "args", "blast_radius", "rollback", "expected_effect", "justification_ref"],
+  "properties": {
+    "id": { "type": "string" },
+    "tool": { "type": "string" },
+    "args": { "type": "object" },
+    "blast_radius": { "type": "object" },
+    "rollback": { "type": "object" },
+    "expected_effect": { "type": "object" },
+    "justification_ref": { "type": "string" }
+  }
+}
