@@ -1,0 +1,119 @@
+{
+  "rules": [
+    {
+      "rule_id": "ORG-03",
+      "template": "forbid_tool_on_entity_during_window",
+      "slots": {
+        "tool": "ecs.restart_service",
+        "entity": "payments-api",
+        "window": "batch"
+      },
+      "why": "ecs.restart_service on payments-api is forbidden during the batch window",
+      "cedar_text": "@id(\"ORG-03\") @source(\"gh:acme/infra/postmortems/2025-09-payments.md\") @approved_by(\"sre-lead\") @approved_at(\"2026-09-19T10:00:00Z\")\nforbid (principal, action == Action::\"ecs.restart_service\", resource)\nwhen { context.entity == \"payments-api\" && context.current_window == \"batch\" };",
+      "source_ref": "gh:acme/infra/postmortems/2025-09-payments.md",
+      "source_snippet": "## Corrective action\n\nNever restart `payments-api` during the nightly batch window (01:30-03:30\nUTC). If the service is degraded during that window, scale it up instead\n(`ecs.scale`) rather than restarting it.",
+      "status": "signed",
+      "approved_by": "sre-lead",
+      "approved_at": "2026-09-19T10:00:00Z",
+      "stale": false
+    },
+    {
+      "rule_id": "ORG-04",
+      "template": "requires_human",
+      "slots": {
+        "tool": "rds.failover",
+        "entity": "primary-db"
+      },
+      "why": "rds.failover on primary-db requires human approval",
+      "cedar_text": "@id(\"ORG-04\") @source(\"gh:acme/infra/postmortems/2025-06-db-failover.md\") @approved_by(\"sre-lead\") @approved_at(\"2026-09-19T10:00:00Z\")\nforbid (principal, action == Action::\"rds.failover\", resource)\nwhen { context.entity == \"primary-db\" && context.human_approved == false };",
+      "source_ref": "gh:acme/infra/postmortems/2025-06-db-failover.md",
+      "source_snippet": "## Corrective action\n\n`rds.failover` on `primary-db` must always require human approval (the\non-call DBA) before it runs. No automation, including an agent, may promote\na replica on its own judgment.",
+      "status": "signed",
+      "approved_by": "sre-lead",
+      "approved_at": "2026-09-19T10:00:00Z",
+      "stale": false
+    },
+    {
+      "rule_id": "ORG-05",
+      "template": "requires_precondition",
+      "slots": {
+        "tool": "ecs.rollback_to_revision",
+        "entity": "orders-db",
+        "check": "snapshot_taken"
+      },
+      "why": "ecs.rollback_to_revision on orders-db requires snapshot_taken first",
+      "cedar_text": "@id(\"ORG-05\") @source(\"gh:acme/infra/postmortems/2025-03-rollback-data-loss.md\") @check(\"snapshot_taken\") @approved_by(\"platform-lead\") @approved_at(\"2026-09-19T10:00:00Z\")\nforbid (principal, action == Action::\"ecs.rollback_to_revision\", resource)\nwhen { context.entity == \"orders-db\" && context.precondition_met == false };",
+      "source_ref": "gh:acme/infra/postmortems/2025-03-rollback-data-loss.md",
+      "source_snippet": "## Corrective action\n\nAny rollback of `orders-db` must confirm a snapshot has been taken\n(`snapshot_taken`) before it is allowed to run. This applies to\n`ecs.rollback_to_revision` and any equivalent tool, including one proposed\nby an agent.",
+      "status": "signed",
+      "approved_by": "platform-lead",
+      "approved_at": "2026-09-19T10:00:00Z",
+      "stale": false
+    },
+    {
+      "rule_id": "ORG-06",
+      "template": "freeze",
+      "slots": {
+        "scope": "prod",
+        "window": "blackfriday"
+      },
+      "why": "no changes to prod during the blackfriday freeze without an override",
+      "cedar_text": "@id(\"ORG-06\") @source(\"gh:acme/infra/adrs/0012-blackfriday-freeze.md\") @approved_by(\"vp-eng\") @approved_at(\"2026-09-19T10:00:00Z\")\nforbid (principal, action, resource)\nwhen { context.env == \"prod\" && context.current_window == \"blackfriday\" && context.human_override == false };",
+      "source_ref": "gh:acme/infra/adrs/0012-blackfriday-freeze.md",
+      "source_snippet": "## Decision\n\nNo changes to `prod` infrastructure between November 24 and November 27\n(inclusive) without a VP-of-Engineering sign-off. This applies to any\nactor, including an automated agent's remediation plan -- an incident during\nthe freeze still pages a hum",
+      "status": "signed",
+      "approved_by": "vp-eng",
+      "approved_at": "2026-09-19T10:00:00Z",
+      "stale": false
+    },
+    {
+      "rule_id": "ORG-07",
+      "template": "cidr_deny",
+      "slots": {
+        "cidr": "203.0.113.0/24",
+        "ports": "any"
+      },
+      "why": "ingress from 203.0.113.0/24 is forbidden",
+      "cedar_text": "@id(\"ORG-07\") @source(\"slack:incident-2025-09-payments#1757754000.000100\") @approved_by(\"sre-lead\") @approved_at(\"2026-09-19T10:00:00Z\")\nforbid (principal, action == Action::\"sg.authorize_ingress\", resource)\nwhen { context.cidr == \"203.0.113.0/24\" };",
+      "source_ref": "slack:incident-2025-09-payments#1757754000.000100",
+      "source_snippet": "the old office range 203.0.113.0/24 is fully decommissioned, block it everywhere.",
+      "status": "signed",
+      "approved_by": "sre-lead",
+      "approved_at": "2026-09-19T10:00:00Z",
+      "stale": false
+    },
+    {
+      "rule_id": null,
+      "template": "requires_human",
+      "slots": {
+        "tool": "ecs.restart_service",
+        "entity": "cart-api"
+      },
+      "why": "ecs.restart_service on cart-api requires human approval",
+      "cedar_text": null,
+      "source_ref": "near-miss:ecs.restart_service:cart-api",
+      "source_snippet": "3 denied attempts at ecs.restart_service on cart-api in the observed window (near-miss proposal, memory/near_miss.py)",
+      "status": "candidate",
+      "approved_by": null,
+      "approved_at": null,
+      "stale": false
+    },
+    {
+      "rule_id": "ORG-08",
+      "template": "forbid_tool_on_entity_during_window",
+      "slots": {
+        "tool": "ecs.restart_service",
+        "entity": "inventory-api",
+        "window": "batch"
+      },
+      "why": "ecs.restart_service on inventory-api is forbidden during the batch window",
+      "cedar_text": "@id(\"ORG-08\") @source(\"gh:acme/infra/postmortems/2025-11-inventory.md\") @approved_by(\"sre-lead\") @approved_at(\"2026-08-01T10:00:00Z\")\nforbid (principal, action == Action::\"ecs.restart_service\", resource)\nwhen { context.entity == \"inventory-api\" && context.current_window == \"batch\" };",
+      "source_ref": "gh:acme/infra/postmortems/2025-11-inventory.md",
+      "source_snippet": "(illustrative only -- this postmortem was later edited after ORG-08 was signed, so its source_hash no longer matches and the rule is now stale)",
+      "status": "stale",
+      "approved_by": "sre-lead",
+      "approved_at": "2026-08-01T10:00:00Z",
+      "stale": true
+    }
+  ]
+}

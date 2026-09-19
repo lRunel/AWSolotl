@@ -1,0 +1,5 @@
+# UI -- rule review and ask-why panels
+
+`ui/rules.js` and `ui/ask.js` render against `fixtures/rules.json` and `fixtures/episodes.json` respectively -- no backend calls, since Person A's `POST /rules/{id}/approve` and `/ask` endpoints don't exist yet, and per contracts.md the UI must render from fixtures with the backend down. Each module splits pure logic (tested with Node's built-in test runner: `node --test ui/test_rules.mjs ui/test_ask.mjs`, 18 tests) from DOM rendering, which is unreviewable by test here since there is no browser in this environment -- it has been read carefully but not visually verified. `ui/index.html`/`ui/app.css` are the shared shell (owner-marked sections per branching.md); Person A's gate-panel/ledger tabs render a placeholder until `ui/gates.js`/`ui/ledger.js` exist.
+
+Breaks if a fixture's shape drifts from what `memory/episodes.py`/`compile.py` actually produce -- both fixtures were generated from those real Python modules (not hand-typed) specifically to avoid that.
