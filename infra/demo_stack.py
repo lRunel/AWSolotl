@@ -124,6 +124,7 @@ class DemoStack(Stack):
                 resource_arn="*",
                 service_name="*",
                 service_type="*",
-                url_path="*"
+                url_path="*",
+                version=1
             )
         )
