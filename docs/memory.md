@@ -67,6 +67,14 @@ permission, which is the one thing the trust ladder exists to prevent.
   extraction yet), Gate 2 denies a batch-window restart citing it, the same
   action outside the window passes, an unsigned candidate is refused at
   write time, and editing the source flips the rule stale.
+- `control/test_gate2_org_rules_multi.py` extends this to ORG-04
+  (`requires_human`), ORG-05 (`requires_precondition`), and ORG-06
+  (`freeze`), all four org rules loaded into one `PolicySet` together
+  alongside the twelve generic invariants, proving they don't cross-fire on
+  unrelated actions. 4 of 6 templates are now proven end-to-end against a
+  real Gate 2; `min_count` only exists as a round-trip test (generic
+  invariant INV-02 already covers that shape) and `cidr_deny` has no real
+  source document yet (needs the Slack export).
 - Not done: the rule-review panel (task 15), and the hand-labelled
   15-candidate acceptance rate (needs real extraction, which needs Bedrock
   access this environment doesn't have).
