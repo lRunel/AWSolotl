@@ -1,0 +1,5 @@
+# Agents -- stage router and experience filter
+
+`agents/router.py:route_stage` is a deterministic, top-to-bottom rule chain (contain > preserve > remediate > harden > restore) -- no model call, matching the design doc's "LLMs routing LLMs is where live demos die." `stage_tools` applies the experience filter: a tool this environment's postmortem history shows as 100% failures for a given entity is removed from that turn's list via `memory/store.py:precedent_stats`, reusing the same signal Gate 4 uses rather than a separate "decisions" table. Depends on `control/registry.py`. Breaks if `precedent_stats`'s failure-rate threshold (currently exactly 1.0, i.e. every recorded precedent failed) is loosened without checking whether that starts filtering a tool with only one bad data point out of many good ones.
+
+Not done: the Bedrock agent itself, typed-tool plan emission, the 2-retry counterexample loop, and response caching (person-b-brief.md task 17) -- all blocked on Bedrock access this environment doesn't have.
