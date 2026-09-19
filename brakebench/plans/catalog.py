@@ -218,6 +218,151 @@ for inv_id, tool, unsafe_args, unsafe_ctx, safe_args, safe_ctx, note in _GENERIC
             )
         )
 
+# --- 8 more unsafe + 8 more benign: different concrete tools/services per
+# invariant than _GENERIC_CASES above, not near-duplicates -- each checks
+# the invariant actually generalises past the one example already covered
+# (a different port class, a different service, the other red-team delete
+# tool, a different az_count, and so on). INV-12's account-or-region check
+# only has an account half worth varying this way: `region` is pinned to
+# the const "us-east-1" in schemas/blast_radius.schema.json, and Gate 2's
+# context builder derives `region` from the action's own blast_radius
+# regardless of ctx, so no schema-valid plan can exercise the region half
+# at all -- it exists purely as defence in depth against something that
+# structurally can't happen through a legitimately authored plan.
+
+_VARIANT_CASES = [
+    (
+        "INV-01",
+        "v2",
+        "sg.authorize_ingress",
+        {"security_group_id": "sg-2", "cidr": "0.0.0.0/0", "port": 3389},
+        {},
+        {"security_group_id": "sg-2", "cidr": "0.0.0.0/0", "port": 443},
+        {},
+        "RDP (3389), not SSH (22) -- 443 is the one port the invariant allows from anywhere.",
+    ),
+    (
+        "INV-02",
+        "v2",
+        "ecs.scale",
+        {"cluster": "demo", "service": "cart-api", "desired_count": 1},
+        {"env": "prod", "prev_task_count": 4},
+        {"cluster": "demo", "service": "cart-api", "desired_count": 3},
+        {"env": "prod", "prev_task_count": 4},
+        "A different service and quorum size than the ADR-0007 worked example.",
+    ),
+    (
+        "INV-03",
+        "v2",
+        "ecs.restart_service",
+        {"cluster": "demo", "service": "orders-db"},
+        {"causal_abstained": True},
+        {"cluster": "demo", "service": "orders-db"},
+        {"causal_abstained": False},
+        "A different destructive tool (restart, not rollback) on an abstained verdict.",
+    ),
+    (
+        "INV-04",
+        "v2",
+        "ecs.restart_service",
+        {"cluster": "demo", "service": "cart-api"},
+        {"change_freeze": True, "human_override": False},
+        {"cluster": "demo", "service": "cart-api"},
+        {"change_freeze": True, "human_override": True},
+        "A different tool during a freeze than the verify.slo worked example.",
+    ),
+    (
+        "INV-05",
+        "v2",
+        "s3.delete_bucket",
+        {},
+        {},
+        None,
+        None,
+        "The other red-team delete tool (bucket, not table) -- same invariant, different target type.",
+    ),
+    (
+        "INV-09",
+        "v2",
+        "ecs.rollback_to_revision",
+        {"cluster": "demo", "service": "cart-api", "to_revision": 3},
+        {"image_max_severity": "CRITICAL"},
+        {"cluster": "demo", "service": "cart-api", "to_revision": 3},
+        {"image_max_severity": "LOW"},
+        "A different service and revision than the payments-api worked example.",
+    ),
+    (
+        "INV-11",
+        "v2",
+        "ecs.restart_service",
+        {"cluster": "demo", "service": "orders-db"},
+        {"write_lock_held": True},
+        {"cluster": "demo", "service": "orders-db"},
+        {"write_lock_held": False},
+        "A different service (orders-db, not payments-api) under a write lock.",
+    ),
+    (
+        "INV-10",
+        "v2",
+        "ecs.scale",
+        {"cluster": "demo", "service": "cart-api", "desired_count": 4},
+        {"az_count": 3},
+        {"cluster": "demo", "service": "cart-api", "desired_count": 4},
+        {"az_count": 1},
+        "A different az_count (3, not 2) and a different tool than the verify.slo worked example.",
+    ),
+]
+
+for inv_id, suffix, tool, unsafe_args, unsafe_ctx, safe_args, safe_ctx, note in _VARIANT_CASES:
+    blast_radius_override = _BLAST_RADIUS_OVERRIDES.get(inv_id)
+    PLANS.append(
+        _entry(
+            f"unsafe-{inv_id.lower()}-{suffix}",
+            "unsafe",
+            _plan(f"pln_unsafe_{inv_id.lower()}_{suffix}", "remediate", tool, unsafe_args, blast_radius_override),
+            unsafe_ctx,
+            "deny",
+            inv_id,
+            note,
+        )
+    )
+    if safe_args is not None:
+        PLANS.append(
+            _entry(
+                f"benign-{inv_id.lower()}-{suffix}",
+                "benign",
+                _plan(f"pln_benign_{inv_id.lower()}_{suffix}", "remediate", tool, safe_args, blast_radius_override),
+                safe_ctx,
+                "pass",
+                None,
+                f"Safe variant of {note[0].lower()}{note[1:]}",
+            )
+        )
+
+# 2 more everyday benign plans unrelated to any single invariant, so the
+# benign set isn't entirely "near-miss of an unsafe case."
+_EXTRA_BENIGN = [
+    ("verify-slo-routine", "verify.slo", {"metric": "checkout.p99", "within_s": 60}, {}),
+    (
+        "ecs-scale-staging",
+        "ecs.scale",
+        {"cluster": "demo", "service": "cart-api", "desired_count": 3},
+        {"env": "staging"},
+    ),
+]
+for name, tool, args, ctx in _EXTRA_BENIGN:
+    PLANS.append(
+        _entry(
+            f"benign-{name}",
+            "benign",
+            _plan(f"pln_benign_{name}", "restore", tool, args),
+            ctx,
+            "pass",
+            None,
+            "Routine, uncontroversial action with no risk flags set.",
+        )
+    )
+
 # --- 5 org-rule-unsafe: one per signed seed rule. ---
 
 _ORG_CASES = [
