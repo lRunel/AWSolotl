@@ -60,6 +60,13 @@ permission, which is the one thing the trust ladder exists to prevent.
   (`source_ref`, `approved_by`, a human-readable `why`) to `invariants/org/`.
 - `is_stale` flips a rule to advisory once its source document's hash no
   longer matches what was approved.
-- Not done: Gate 2 loading `invariants/org/*.cedar` (task 14), the
-  rule-review panel (task 15), and the hand-labelled 15-candidate acceptance
-  rate.
+- Gate 2 now loads `invariants/org/*.cedar` and their `.meta.json` citation
+  sidecars (task 14, see `docs/gate2.md`). The full I3 exit test passes as a
+  real integration test (`control/test_gate2_org_rules.py`): the real seed
+  postmortem's hash signs a hand-authored ORG-03 candidate (no live Bedrock
+  extraction yet), Gate 2 denies a batch-window restart citing it, the same
+  action outside the window passes, an unsigned candidate is refused at
+  write time, and editing the source flips the rule stale.
+- Not done: the rule-review panel (task 15), and the hand-labelled
+  15-candidate acceptance rate (needs real extraction, which needs Bedrock
+  access this environment doesn't have).
