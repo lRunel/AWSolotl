@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/ecs_scale.schema.json",
+  "title": "ecs.scale args",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cluster", "service", "desired_count"],
+  "properties": {
+    "cluster": { "type": "string" },
+    "service": { "type": "string" },
+    "desired_count": { "type": "integer", "minimum": 0 }
+  }
+}

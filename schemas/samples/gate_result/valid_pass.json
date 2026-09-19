@@ -1,0 +1,7 @@
+{
+  "gate": "authority",
+  "decision": "pass",
+  "reason_code": "ok",
+  "latency_ms": 4.2,
+  "schema_version": 1
+}

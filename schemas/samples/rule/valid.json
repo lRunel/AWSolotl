@@ -1,0 +1,12 @@
+{
+  "rule_id": "ORG-03",
+  "template": "forbid_tool_on_entity_during_window",
+  "slots": { "tool": "ecs.restart_service", "entity": "payments-api", "window": "batch" },
+  "cedar_text": "@id(\"ORG-03\") forbid (principal, action == Action::\"ecs.restart_service\", resource) when { resource.service == \"payments-api\" && context.in_batch_window == true };",
+  "source_ref": "gh:acme/infra/postmortems/2025-09-payments.md#L40",
+  "source_hash": "sha256:d40ff53cd83e33e8f5253860a0960a114c0e2bf7e43ff09ccf078830c78c43e9",
+  "status": "signed",
+  "approved_by": "sre-lead",
+  "approved_at": "2026-09-19T10:00:00Z",
+  "signature": "sha256:7e2d347139e7cd88b229b59046cae07acdcd26bba631329a06fb51109589d924"
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/verify_slo.schema.json",
+  "title": "verify.slo args",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["metric", "within_s"],
+  "properties": {
+    "metric": { "type": "string" },
+    "within_s": { "type": "integer", "minimum": 1 }
+  }
+}

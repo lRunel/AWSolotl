@@ -1,0 +1,7 @@
+{
+  "accounts": ["123456789012"],
+  "region": "us-east-1",
+  "arns": ["arn:aws:ecs:us-east-1:123456789012:service/demo/payments-api"],
+  "max_tasks": 4,
+  "data_destructive": false
+}

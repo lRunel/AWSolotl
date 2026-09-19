@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/ecs_restart_service.schema.json",
+  "title": "ecs.restart_service args",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cluster", "service"],
+  "properties": {
+    "cluster": { "type": "string" },
+    "service": { "type": "string" }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "incident_id": "inc_7f3",
+  "slo": "checkout.p99",
+  "window": ["T-10m", "T"],
+  "candidates": [
+    {
+      "entity": "ecs/payments-api",
+      "confidence": 0.87,
+      "layer": "L2",
+      "attribution": 0.71,
+      "anomaly_class": "value",
+      "evidence": ["deploy rev 4412 at T-3m", "pool_wait_ms +840%", "5xx 0.2%->11%"]
+    }
+  ],
+  "falsification": { "p": 0.004, "passed": true },
+  "abstained": false,
+  "ts": "2026-09-18T11:04:22Z",
+  "sig": "sha256:deadbeef",
+  "schema_version": 1
+}

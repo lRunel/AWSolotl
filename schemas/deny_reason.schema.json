@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "deny_reason.schema.json",
+  "title": "DenyReason",
+  "description": "The counterexample payload an agent receives on a Gate 2 deny: which invariant fired, the values that triggered it, allowed alternatives, and a citation when it came from a signed org rule.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["invariant", "why", "values", "retries_left"],
+  "properties": {
+    "invariant": { "type": "string" },
+    "why": { "type": "string" },
+    "values": { "type": "object" },
+    "citation": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["rule_id", "source_ref", "approved_by"],
+      "properties": {
+        "rule_id": { "type": "string" },
+        "source_ref": { "type": "string" },
+        "approved_by": { "type": "string" }
+      }
+    },
+    "hint": { "type": "string" },
+    "retries_left": { "type": "integer", "minimum": 0, "maximum": 2 }
+  }
+}

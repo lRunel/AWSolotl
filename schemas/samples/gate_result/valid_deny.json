@@ -1,0 +1,17 @@
+{
+  "gate": "proof",
+  "decision": "deny",
+  "reason_code": "org_rule",
+  "invariant": "ORG-03",
+  "why": "restart of payments-api during the batch window is forbidden",
+  "values": { "tool": "ecs.restart_service", "entity": "payments-api", "window": "batch" },
+  "citation": {
+    "rule_id": "ORG-03",
+    "source_ref": "gh:acme/infra/postmortems/2025-09-payments.md#L40",
+    "approved_by": "sre-lead"
+  },
+  "hint": "wait for the batch window to close, or use ecs.scale",
+  "retries_left": 1,
+  "latency_ms": 184,
+  "schema_version": 1
+}

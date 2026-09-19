@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tool_registry.schema.json",
+  "title": "ToolRegistry",
+  "description": "The entire action space. If a tool is not here, the agent cannot express the action.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tools"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/ToolSpec" }
+    }
+  },
+  "$defs": {
+    "ToolSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool",
+        "tier",
+        "stage",
+        "args_schema",
+        "simulator",
+        "executor_action",
+        "rollback",
+        "exposed_to_agent"
+      ],
+      "properties": {
+        "tool": { "type": "string", "pattern": "^[a-z0-9_]+\\.[a-z0-9_]+$" },
+        "tier": { "type": "string", "enum": ["mvp", "stretch", "red-team"] },
+        "stage": {
+          "type": ["string", "null"],
+          "enum": [
+            "contain",
+            "preserve",
+            "remediate",
+            "harden",
+            "restore",
+            null
+          ]
+        },
+        "args_schema": {
+          "type": "object",
+          "description": "A JSON Schema document for this tool's args, e.g. schemas/tools/ecs_scale.schema.json."
+        },
+        "simulator": {
+          "type": "string",
+          "enum": [
+            "describe_projection",
+            "ec2_dryrun",
+            "read_only",
+            "cedar_only",
+            "change_set"
+          ]
+        },
+        "executor_action": { "type": "string" },
+        "rollback": { "type": "string" },
+        "exposed_to_agent": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "tier": { "const": "red-team" } },
+            "required": ["tier"]
+          },
+          "then": {
+            "properties": { "exposed_to_agent": { "const": false } }
+          }
+        }
+      ]
+    }
+  }
+}

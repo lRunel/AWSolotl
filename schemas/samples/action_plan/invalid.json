@@ -1,0 +1,26 @@
+{
+  "plan_id": "pln_01",
+  "incident_id": "inc_7f3",
+  "stage": "remediate",
+  "schema_version": 1,
+  "actions": [
+    {
+      "id": "a1",
+      "tool": "ecs.rollback_to_revision",
+      "args": { "cluster": "demo", "service": "payments-api", "to_revision": 11 },
+      "blast_radius": {
+        "accounts": ["123456789012"],
+        "region": "us-east-1",
+        "arns": ["arn:aws:ecs:us-east-1:123456789012:service/demo/payments-api"],
+        "max_tasks": 4,
+        "data_destructive": false
+      },
+      "expected_effect": {
+        "metric": "checkout.p99",
+        "direction": "down",
+        "within_s": 180
+      },
+      "justification_ref": "inc_7f3#candidates[0]"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "causal_verdict.schema.json",
+  "title": "CausalVerdict",
+  "description": "Plane 1 output. confidence is a fused ranking score, not a calibrated probability -- label it that way anywhere it is displayed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "incident_id",
+    "slo",
+    "window",
+    "candidates",
+    "falsification",
+    "abstained",
+    "ts",
+    "sig",
+    "schema_version"
+  ],
+  "properties": {
+    "incident_id": { "type": "string" },
+    "slo": { "type": "string" },
+    "window": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["entity", "confidence", "layer", "evidence"],
+        "properties": {
+          "entity": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "layer": { "type": "string", "enum": ["L1", "L2", "L3"] },
+          "attribution": { "type": "number" },
+          "anomaly_class": {
+            "type": "string",
+            "enum": ["type", "value", "frequency"]
+          },
+          "evidence": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "falsification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["p", "passed"],
+      "properties": {
+        "p": { "type": "number", "minimum": 0, "maximum": 1 },
+        "passed": { "type": "boolean" }
+      }
+    },
+    "abstained": { "type": "boolean" },
+    "ts": { "type": "string" },
+    "sig": { "type": "string" },
+    "schema_version": { "type": "integer", "const": 1 }
+  }
+}

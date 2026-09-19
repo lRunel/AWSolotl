@@ -1,0 +1,20 @@
+{
+  "record_id": 42,
+  "prev_hash": "sha256:d40ff53cd83e33e8f5253860a0960a114c0e2bf7e43ff09ccf078830c78c43e9",
+  "incident_id": "inc_7f3",
+  "action": { "tool": "ecs.rollback_to_revision" },
+  "gates": {
+    "authority": "pass",
+    "proof": "pass 14/14",
+    "radius": "pass",
+    "risk": 0.21,
+    "autonomy": "L2",
+    "watchdog": "clean"
+  },
+  "rules_applied": ["INV-02", "ORG-03"],
+  "causal_basis": { "entity": "payments-api", "conf": 0.87, "p": 0.004 },
+  "diff": { "task_definition": "11 -> 12" },
+  "result": "SLO recovered T+94s",
+  "actor": "agent:remediate-1",
+  "hash": "sha256:7e2d347139e7cd88b229b59046cae07acdcd26bba631329a06fb51109589d924"
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gate_result.schema.json",
+  "title": "GateResult",
+  "description": "The shared return shape for all five gates (control/gate1.py .. gate5.py, sensors.py).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["gate", "decision", "reason_code", "latency_ms", "schema_version"],
+  "properties": {
+    "gate": {
+      "type": "string",
+      "enum": ["authority", "proof", "radius", "risk", "watchdog"]
+    },
+    "decision": { "type": "string", "enum": ["pass", "deny"] },
+    "reason_code": { "type": "string" },
+    "invariant": { "type": "string" },
+    "why": { "type": "string" },
+    "values": { "type": "object" },
+    "citation": { "$ref": "deny_reason.schema.json#/properties/citation" },
+    "hint": { "type": "string" },
+    "retries_left": { "type": "integer", "minimum": 0, "maximum": 2 },
+    "latency_ms": { "type": "number", "minimum": 0 },
+    "schema_version": { "type": "integer", "const": 1 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "decision": { "const": "deny" } },
+        "required": ["decision"]
+      },
+      "then": { "required": ["invariant", "why", "values"] }
+    }
+  ]
+}

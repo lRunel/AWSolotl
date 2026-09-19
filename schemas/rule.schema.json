@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rule.schema.json",
+  "title": "Rule",
+  "description": "A candidate or signed org rule. template is the closed vocabulary the model may fill slots from -- it never writes Cedar text itself; the compiler does.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rule_id",
+    "template",
+    "slots",
+    "source_ref",
+    "source_hash",
+    "status"
+  ],
+  "properties": {
+    "rule_id": { "type": "string", "pattern": "^ORG-[0-9]+$" },
+    "template": {
+      "type": "string",
+      "enum": [
+        "forbid_tool_on_entity_during_window",
+        "min_count",
+        "requires_precondition",
+        "requires_human",
+        "freeze",
+        "cidr_deny"
+      ]
+    },
+    "slots": { "type": "object" },
+    "cedar_text": {
+      "type": "string",
+      "description": "Absent on a candidate; present once the compiler has run."
+    },
+    "source_ref": { "type": "string" },
+    "source_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["candidate", "signed", "stale", "revoked"]
+    },
+    "approved_by": { "type": "string" },
+    "approved_at": { "type": "string", "format": "date-time" },
+    "signature": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "signed" } },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["cedar_text", "approved_by", "approved_at", "signature"]
+      }
+    }
+  ]
+}

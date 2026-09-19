@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "source_chunk.schema.json",
+  "title": "SourceChunk",
+  "description": "One shape for every connector's output (connectors/base.py). Raw text here is trust_level 0: untrusted until anchored and, later, approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "source_type",
+    "content",
+    "url",
+    "author",
+    "created_at",
+    "content_hash",
+    "metadata"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "source_type": {
+      "type": "string",
+      "enum": ["github_pr", "postmortem", "adr", "slack_message"]
+    },
+    "content": { "type": "string" },
+    "url": { "type": "string" },
+    "author": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "metadata": { "type": "object" }
+  }
+}
