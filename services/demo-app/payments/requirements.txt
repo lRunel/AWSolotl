@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+boto3
+aws-xray-sdk
+pydantic
