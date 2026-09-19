@@ -35,10 +35,10 @@ permission, which is the one thing the trust ladder exists to prevent.
 - `memory/ingest.py`: connector -> anchor -> injection scan -> store,
   producing schema-valid `MemoryItem`s at `trust_level` 0. Flagged content is
   still stored, never dropped, per the trust ladder.
-- `memory/corpus/{postmortems,adrs}/*.md`: 2 of the 5 outlined documents
-  written for real (`2025-09-payments.md`, `0007-payments-quorum.md`); the
-  rest of the outline (2 more postmortems, 1 more ADR, ~30 PRs, 1 Slack
-  export) is not written yet.
+- `memory/corpus/{postmortems,adrs}/*.md`: all 5 outlined markdown documents
+  are now written for real (3 postmortems, 2 ADRs -- see
+  `memory/CORPUS_OUTLINE.md`'s status section). The ~30 PRs and 1 Slack
+  export are not written, since they need connectors that don't exist yet.
 - `extract.py` (LLM slot-filling, I3) is not started -- blocked on Bedrock access, same as the I0 spike.
 
 ## I3 status (in progress)

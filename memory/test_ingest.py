@@ -24,8 +24,8 @@ def store() -> MemoryItemStore:
 def test_ingest_returns_one_item_per_chunk(store: MemoryItemStore) -> None:
     connector = PostmortemConnector(_CORPUS_ROOT)
     items = ingest(connector, workspace_id="acme", store=store)
-    assert len(items) == 2
-    assert len(store.list_all()) == 2
+    assert len(items) == 5
+    assert len(store.list_all()) == 5
 
 
 def test_every_item_validates_against_memory_item_schema(store: MemoryItemStore) -> None:
@@ -51,8 +51,17 @@ def test_postmortem_item_is_entity_and_tool_anchored(store: MemoryItemStore) -> 
     assert item["injection_flag"] is False
 
 
+def test_rollback_postmortem_is_anchored_to_orders_db_and_its_tool(store: MemoryItemStore) -> None:
+    connector = PostmortemConnector(_CORPUS_ROOT)
+    ingest(connector, workspace_id="acme", store=store)
+    item = store.get("postmortem_2025-03-rollback-data-loss")
+    assert item is not None
+    assert "ecs/orders-db" in item["entity_ids"]
+    assert "ecs.rollback_to_revision" in item["tool_ids"]
+
+
 def test_ingest_is_idempotent_by_item_id(store: MemoryItemStore) -> None:
     connector = PostmortemConnector(_CORPUS_ROOT)
     ingest(connector, workspace_id="acme", store=store)
     ingest(connector, workspace_id="acme", store=store)
-    assert len(store.list_all()) == 2
+    assert len(store.list_all()) == 5

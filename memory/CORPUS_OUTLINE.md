@@ -54,13 +54,23 @@ an org rule).
 
 ## Template coverage checklist
 
-- [x] `forbid_tool_on_entity_during_window` -- postmortem 1 (ORG-03)
-- [x] `requires_human` -- postmortem 2
-- [x] `requires_precondition` -- postmortem 3
-- [x] `min_count` -- ADR 1
-- [x] `freeze` -- ADR 2
-- [x] `cidr_deny` -- Slack export
+- [x] `forbid_tool_on_entity_during_window` -- postmortem 1 (`2025-09-payments.md`), compiled and signed as ORG-03, real integration test in `control/test_gate2_org_rules.py`
+- [x] `requires_human` -- postmortem 2 (`2025-06-db-failover.md`), content written, not yet compiled into a signed rule
+- [x] `requires_precondition` -- postmortem 3 (`2025-03-rollback-data-loss.md`), content written, not yet compiled into a signed rule
+- [x] `min_count` -- ADR 1 (`0007-payments-quorum.md`), content written, not yet compiled into a signed rule
+- [x] `freeze` -- ADR 2 (`0012-blackfriday-freeze.md`), content written, not yet compiled into a signed rule
+- [ ] `cidr_deny` -- Slack export, not written yet (the only remaining gap: no GitHub or Slack connector exists to ingest PRs or the Slack export, so those two source types stay outline-only)
 
-Actual file content (the postmortem/ADR/PR/Slack text itself) is I2 task 11,
-not written yet. This outline exists so ingest, anchoring, and extraction
-work in I2/I3 aren't blocked on deciding what the corpus contains.
+## Status
+
+All 3 postmortems and both ADRs are now written for real (5/5 markdown
+documents). Each demonstrates a distinct template's slots in prose, so
+`memory/extract.py` (I3, blocked on Bedrock access) has real content to run
+against once it exists. Only ORG-03 has actually been compiled, signed, and
+proven against Gate 2 so far -- the other four are real source documents
+without a corresponding `Rule` yet, since hand-authoring one for each would
+duplicate what extraction should do once it exists.
+
+The ~30 PRs and the 1 Slack export are still not written: they need a
+GitHub connector and a Slack connector, neither of which exists yet
+(I2, not started).

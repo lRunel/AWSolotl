@@ -23,11 +23,12 @@ def test_authenticate_always_true(connector: PostmortemConnector) -> None:
     assert connector.authenticate("any-token") is True
 
 
-def test_fetch_all_returns_postmortem_and_adr(connector: PostmortemConnector) -> None:
+def test_fetch_all_returns_postmortems_and_adrs(connector: PostmortemConnector) -> None:
     chunks = connector.fetch_all(workspace_id="acme")
-    source_types = {c.source_type for c in chunks}
-    assert source_types == {"postmortem", "adr"}
-    assert len(chunks) == 2
+    source_types = [c.source_type for c in chunks]
+    assert source_types.count("postmortem") == 3
+    assert source_types.count("adr") == 2
+    assert len(chunks) == 5
 
 
 def test_chunk_fields_and_schema_validity(connector: PostmortemConnector) -> None:
@@ -52,8 +53,11 @@ def test_chunk_fields_and_schema_validity(connector: PostmortemConnector) -> Non
 
 
 def test_fetch_since_filters_by_date(connector: PostmortemConnector) -> None:
-    only_recent = connector.fetch_since(workspace_id="acme", since="2025-06-01T00:00:00Z")
-    assert {c.id for c in only_recent} == {"postmortem_2025-09-payments"}
+    only_recent = connector.fetch_since(workspace_id="acme", since="2025-08-01T00:00:00Z")
+    assert {c.id for c in only_recent} == {
+        "postmortem_2025-09-payments",
+        "adr_0012-blackfriday-freeze",
+    }
 
     everything = connector.fetch_since(workspace_id="acme", since="2000-01-01T00:00:00Z")
-    assert len(everything) == 2
+    assert len(everything) == 5
