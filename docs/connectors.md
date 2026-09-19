@@ -7,3 +7,5 @@
 `connectors/slack_export.py` reads a Slack **export** file (`memory/corpus/slack/*.json`), not a live Slack API -- no auth, no rate limits, per the design doc's 3-connector scope cut. One `SourceChunk` per top-level message, with any `thread_replies` folded into its content so a reply is never anchored or scanned separately from the message it replies to. Breaks if an export file's `ts` isn't a valid Unix-epoch string, or if two messages in the same file share a `ts` (their chunk ids would collide).
 
 All three connectors named in person-b-brief.md task 8 now exist.
+
+`GitHubConnector.fetch_fixture` reads a recorded PR list (`fixtures/github_prs.json`) instead of the live API -- not just a test convenience, the real way the seeded ~30-PR corpus (`memory/CORPUS_OUTLINE.md`) gets ingested at all, since there is no real `acme/infra` repo or GitHub token in this environment. 20 ordinary PRs, 5 referencing the real postmortems/ADRs by path, 3 injection-shaped fixtures, 2 low-signal. Running this fixture through the pipeline found a real gap in `control/sensors.py`'s injection patterns (see `docs/sensors.md`).

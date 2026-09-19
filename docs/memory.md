@@ -38,12 +38,14 @@ permission, which is the one thing the trust ladder exists to prevent.
 - `memory/ingest.py`: connector -> anchor -> injection scan -> store,
   producing schema-valid `MemoryItem`s at `trust_level` 0. Flagged content is
   still stored, never dropped, per the trust ladder.
-- `memory/corpus/{postmortems,adrs,slack}/*`: all 6 outlined source
-  documents are now written for real (3 postmortems, 2 ADRs, 1 Slack
-  export -- see `memory/CORPUS_OUTLINE.md`'s status section). Only the ~30
-  PR fixture set is not written, since it needs a real or recorded repo.
+- `memory/corpus/{postmortems,adrs,slack}/*` + `fixtures/github_prs.json`:
+  the entire seeded corpus outline is now written for real (3 postmortems,
+  2 ADRs, 1 Slack export, ~30 PRs -- see `memory/CORPUS_OUTLINE.md`'s
+  status section).
 - `connectors/github.py`: pull requests only (paginated, rate-limit
-  backoff), tested against a fake session, no real network calls.
+  backoff), tested against a fake session for the live path, plus
+  `fetch_fixture` for the recorded ~30-PR corpus -- no real network calls
+  anywhere.
 - `connectors/slack_export.py`: reads an exported channel JSON file, one
   chunk per top-level message with thread replies folded in. Not a live
   Slack API connector (no OAuth, no rate limits) per the design doc's

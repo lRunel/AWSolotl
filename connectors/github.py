@@ -10,7 +10,9 @@ guessing a fixed sleep duration.
 """
 from __future__ import annotations
 
+import json
 import time
+from pathlib import Path
 
 import requests
 
@@ -45,6 +47,17 @@ class GitHubConnector(BaseConnector):
         # feature); at seed-corpus scale (~30 PRs) filtering client-side
         # after fetch_all is simpler than a second pagination strategy.
         return [chunk for chunk in self.fetch_all(workspace_id) if chunk.created_at >= since]
+
+    def fetch_fixture(self, fixture_path: Path) -> list[SourceChunk]:
+        """Load a recorded PR list from a local JSON file
+        (`{"workspace": "owner/repo", "pulls": [...GitHub API PR objects...]}`)
+        instead of the live API. Real use case, not just a test hack: there
+        is no real `acme/infra` repo, so `fixtures/github_prs.json` is how
+        the seeded corpus's ~30 PRs (memory/CORPUS_OUTLINE.md) get ingested
+        at all in an environment with no GitHub token to fetch from."""
+        data = json.loads(Path(fixture_path).read_text(encoding="utf-8"))
+        owner, repo = data["workspace"].split("/", 1)
+        return [self._to_chunk(owner, repo, pr) for pr in data["pulls"]]
 
     def _to_chunk(self, owner: str, repo: str, pr: dict) -> SourceChunk:
         body = pr.get("body") or ""

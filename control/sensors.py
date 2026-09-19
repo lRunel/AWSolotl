@@ -18,8 +18,12 @@ import re
 # should be added as real near-misses are observed, per the design doc's
 # "ingested text is data" rule -- this is a scanner, not a proof.
 _INJECTION_PATTERNS = [
-    r"\bignore\s+(the\s+)?(rest\s+of\s+this\s+)?(all\s+|previous\s+|prior\s+)?instructions\b",
-    r"\bdisregard\s+(the\s+|all\s+|previous\s+|prior\s+)?(policy|instructions|rules)\b",
+    # Up to 5 filler words between the verb and its target tolerates stacked
+    # qualifiers ("the previous", "all prior", ...) that a single optional
+    # group would miss -- found as a real false negative in
+    # connectors/test_github_fixture.py ("disregard the previous instructions").
+    r"\bignore\s+(?:\w+\s+){0,5}instructions\b",
+    r"\bdisregard\s+(?:\w+\s+){0,5}(policy|instructions|rules)\b",
     r"\bgrant\s+(admin|full|root)\s+access\b",
     r"\bmark\s+all\s+(checks|tests)\s+as\s+passing\b",
     r"\byou\s+are\s+now\s+(a|an)\b",
