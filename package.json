@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "aws-cdk": "^2.1142.0"
   }

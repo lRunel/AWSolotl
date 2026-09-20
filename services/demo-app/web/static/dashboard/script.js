@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
+            if (!link.dataset.tab) return;
             // Remove active from all links and panes
             navLinks.forEach(l => l.classList.remove('active'));
             tabPanes.forEach(p => p.classList.remove('active'));
@@ -37,7 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Show corresponding pane
             const targetId = `tab-${link.dataset.tab}`;
-            document.getElementById(targetId).classList.add('active');
+            const targetPane = document.getElementById(targetId);
+            if (targetPane) targetPane.classList.add('active');
         });
     });
 });

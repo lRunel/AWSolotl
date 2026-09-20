@@ -4,15 +4,10 @@ from fastapi.responses import FileResponse
 import os
 import requests
 import time
-from aws_xray_sdk.core import xray_recorder
-from aws_xray_sdk.ext.fastapi.middleware import XRayMiddleware
 from pydantic import BaseModel
 import random
 
 app = FastAPI()
-
-xray_recorder.configure(service='web-api')
-app.add_middleware(XRayMiddleware, recorder=xray_recorder)
 
 PAYMENTS_API_URL = os.environ.get("PAYMENTS_API_URL", "http://localhost:8081")
 
@@ -66,5 +61,12 @@ def flaky_endpoint():
         raise HTTPException(status_code=500, detail="Random internal error occurred")
     return {"status": "success"}
 
-# Serve the portfolio website
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+
+@app.get("/dashboard")
+def dashboard():
+    return FileResponse(os.path.join(STATIC_DIR, "dashboard.html"))
+
+# Serve static files (portfolio, dashboard, and assets)
+if os.path.isdir(STATIC_DIR):
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")

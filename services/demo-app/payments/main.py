@@ -5,15 +5,38 @@ import time
 import random
 import logging
 import json
-from aws_xray_sdk.core import xray_recorder
-from aws_xray_sdk.ext.fastapi.middleware import XRayMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel
 
 app = FastAPI()
 
 # Instrument X-Ray
-xray_recorder.configure(service='payments-api')
-app.add_middleware(XRayMiddleware, recorder=xray_recorder)
+try:
+    from aws_xray_sdk.core import xray_recorder
+    xray_recorder.configure(service='payments-api')
+
+    class XRayFastAPIMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: Request, call_next):
+            try:
+                segment = xray_recorder.begin_segment('payments-api')
+            except Exception:
+                segment = None
+            try:
+                response = await call_next(request)
+                if segment:
+                    segment.put_http_meta('status', response.status_code)
+                return response
+            except Exception as e:
+                if segment:
+                    segment.add_exception(e)
+                raise
+            finally:
+                if segment:
+                    xray_recorder.end_segment()
+
+    app.add_middleware(XRayFastAPIMiddleware)
+except Exception as e:
+    logging.warning(f"X-Ray setup warning: {e}")
 
 # Chaos state
 chaos_config = {
@@ -22,9 +45,19 @@ chaos_config = {
     "pool_leak": False
 }
 
-ddb = boto3.resource('dynamodb', region_name=os.environ.get("AWS_REGION", "us-east-1"))
-table_name = os.environ.get("DYNAMODB_TABLE", "lockstep-demo-table")
-table = ddb.Table(table_name)
+_table = None
+
+def get_table():
+    global _table
+    if _table is None:
+        try:
+            ddb = boto3.resource('dynamodb', region_name=os.environ.get("AWS_REGION", "us-east-1"))
+            table_name = os.environ.get("DYNAMODB_TABLE", "lockstep-demo-table")
+            _table = ddb.Table(table_name)
+        except Exception as e:
+            logging.warning(f"DynamoDB initialization bypassed: {e}")
+            _table = False
+    return _table if _table is not False else None
 
 class ChaosRequest(BaseModel):
     latency_ms: int = 0
@@ -53,7 +86,9 @@ def checkout():
 
     # 2. Fake DDB operation
     try:
-        table.put_item(Item={"pk": f"txn_{int(time.time()*1000)}", "status": "success"})
+        t = get_table()
+        if t:
+            t.put_item(Item={"pk": f"txn_{int(time.time()*1000)}", "status": "success"})
     except Exception as e:
         logging.error(f"DDB Error: {e}")
     

@@ -112,4 +112,10 @@ class DemoStack(Stack):
             task_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC)
         )
         
+        self.web_service.target_group.configure_health_check(
+            path="/",
+            port="8080",
+            healthy_http_codes="200-499"
+        )
+        
 
