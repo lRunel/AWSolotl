@@ -4,3 +4,6 @@ __pycache__/
 node_modules/
 *.pyc
 .pytest_cache/
+var/
+dist/
+.claude/

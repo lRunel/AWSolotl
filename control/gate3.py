@@ -11,7 +11,15 @@ def check(plan: dict, action: dict, ctx: dict) -> dict:
     # In Iteration 0/Gate3 pure function, the orchestrator/adapter provides the simulated ARNs in ctx.
     simulated_arns = set(ctx.get("simulated_arns", []))
     
-    if tool not in ["ecs.scale", "ecs.restart_service", "ecs.rollback_to_revision", "sg.revoke_ingress", "verify.slo"]:
+    # demo.* tools are the local-only remediation actions the control-api's
+    # self-healing watchdog uses when there is no AWS account to simulate
+    # against (services/control-api); their "blast radius" is a single local
+    # process, so they use the same declared-vs-simulated subset check as
+    # everything else, just with a synthetic local ARN.
+    if tool not in [
+        "ecs.scale", "ecs.restart_service", "ecs.rollback_to_revision", "sg.revoke_ingress", "verify.slo",
+        "demo.reset_chaos_config", "demo.restart_web_service",
+    ]:
         return {
             "gate": "radius", "decision": "deny", "reason_code": "unknown_tool",
             "invariant": "G3", "why": f"Gate 3 cannot simulate {tool}", "values": {"tool": tool},

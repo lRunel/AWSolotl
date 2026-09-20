@@ -1,13 +1,18 @@
+import os
+import random
+import sys
+import time
+
+import requests
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-import os
-import requests
-import time
 from pydantic import BaseModel
-import random
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+from control.ratelimit import RateLimitMiddleware  # noqa: E402
 
 app = FastAPI()
+app.add_middleware(RateLimitMiddleware, capacity=30, refill_per_s=10.0)
 
 PAYMENTS_API_URL = os.environ.get("PAYMENTS_API_URL", "http://localhost:8081")
 
@@ -61,12 +66,24 @@ def flaky_endpoint():
         raise HTTPException(status_code=500, detail="Random internal error occurred")
     return {"status": "success"}
 
-STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+@app.get("/api/bug_crash")
+def bug_crash():
+    # Hard-kills this process after the response is scheduled. This is the
+    # literal "curl a bad request and watch it crash" endpoint: the local
+    # control-api (services/control-api) supervises this process and
+    # respawns it, logging the incident and the fix to the ledger.
+    import threading
 
-@app.get("/dashboard")
-def dashboard():
-    return FileResponse(os.path.join(STATIC_DIR, "dashboard.html"))
+    def _die():
+        time.sleep(0.05)
+        os._exit(1)
 
-# Serve static files (portfolio, dashboard, and assets)
-if os.path.isdir(STATIC_DIR):
-    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
+    threading.Thread(target=_die, daemon=True).start()
+    return {"status": "crashing"}
+
+# The storefront: the thing actually being protected. Mounted last, and only
+# at "/", so it never shadows the /api/* routes above -- Starlette checks
+# routes in registration order, and a mount only catches what nothing more
+# specific already matched.
+STOREFRONT_DIR = os.path.join(os.path.dirname(__file__), "storefront")
+app.mount("/", StaticFiles(directory=STOREFRONT_DIR, html=True), name="storefront")

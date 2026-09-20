@@ -22,10 +22,22 @@ def lambda_handler(event, context):
     plan_id = plan.get("id", "unknown")
     action_id = action.get("id", "unknown")
 
-    # Run Gates 1-5
-    for gate_module, name in [(gate1, "G1"), (gate2, "G2"), (gate3, "G3"), (gate4, "G4"), (gate5, "G5")]:
+    # Run Gates 1-5. Gate 2 and Gate 4 export their check function under a
+    # gate-specific name (gate2_check, gate4_score) rather than `check`, so
+    # each gate needs its own entry point rather than a uniform attribute
+    # lookup -- calling `.check` uniformly here used to raise AttributeError
+    # on every real (non-stub) run and was never caught because nothing
+    # exercises this Lambda handler end to end yet.
+    gate_checks = [
+        (gate1.check, "G1"),
+        (gate2.gate2_check, "G2"),
+        (gate3.check, "G3"),
+        (gate4.gate4_score, "G4"),
+        (gate5.check, "G5"),
+    ]
+    for gate_check, name in gate_checks:
         try:
-            result = gate_module.check(plan, action, ctx)
+            result = gate_check(plan, action, ctx)
             gates_results[name] = result
             if result.get("decision") != "pass":
                 try:

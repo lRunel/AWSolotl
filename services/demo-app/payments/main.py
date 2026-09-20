@@ -1,14 +1,20 @@
-from fastapi import FastAPI, Request, Response, HTTPException
-import boto3
-import os
-import time
-import random
-import logging
 import json
-from starlette.middleware.base import BaseHTTPMiddleware
+import logging
+import os
+import random
+import sys
+import time
+
+import boto3
+from fastapi import FastAPI, HTTPException, Request, Response
 from pydantic import BaseModel
+from starlette.middleware.base import BaseHTTPMiddleware
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+from control.ratelimit import RateLimitMiddleware  # noqa: E402
 
 app = FastAPI()
+app.add_middleware(RateLimitMiddleware, capacity=30, refill_per_s=10.0)
 
 # Instrument X-Ray
 try:
@@ -70,6 +76,12 @@ def set_chaos(req: ChaosRequest):
     chaos_config["error_rate"] = req.error_rate
     chaos_config["pool_leak"] = req.pool_leak
     return chaos_config
+
+@app.get("/health")
+def health():
+    # Deliberately not subject to chaos config -- this is the watchdog's
+    # liveness probe, separate from /checkout's SLO probe.
+    return {"status": "ok", "chaos_config": chaos_config}
 
 @app.get("/checkout")
 def checkout():
