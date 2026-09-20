@@ -4,6 +4,7 @@ import os
 import time
 import random
 import logging
+import json
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.ext.fastapi.middleware import XRayMiddleware
 from pydantic import BaseModel
@@ -83,5 +84,3 @@ def checkout():
     print(json.dumps(emf_log))
     
     return {"status": "ok", "latency": latency_ms}
-
-import json

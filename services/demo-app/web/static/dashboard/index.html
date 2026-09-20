@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lockstep Recall Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Opening Animation Overlay -->
+    <div id="startup-overlay">
+        <div class="hash-chain">
+            <div class="node"></div>
+            <div class="line"></div>
+            <div class="node"></div>
+            <div class="line"></div>
+            <div class="node"></div>
+        </div>
+        <div class="overlay-text">Lockstep Recall initialized.</div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="hidden">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>ResiliAgent</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-tab="ledger">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Ledger
+                </li>
+                <li data-tab="health">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    System Health
+                </li>
+                <li data-tab="docs">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    Documentation
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content">
+            <!-- Ledger View -->
+            <section id="tab-ledger" class="tab-pane active">
+                <header class="section-header">
+                    <h1>Immutable Ledger</h1>
+                    <p>Cryptographic record of agent actions and decisions.</p>
+                </header>
+                <div class="timeline">
+                    <!-- Sample Event 1: Success -->
+                    <div class="event-card">
+                        <div class="event-header">
+                            <span class="badge success">Executed</span>
+                            <span class="timestamp">12:45:02 UTC</span>
+                        </div>
+                        <h3>Scale ECS Service</h3>
+                        <p class="reasoning"><strong>Reasoning:</strong> ADOT detected CPU spike > 80% on <code>web-api</code>. Scaling desired count to 4.</p>
+                        <details class="crypto-proof">
+                            <summary>Cryptographic Proof & Gates</summary>
+                            <div class="details-content">
+                                <ul>
+                                    <li><strong>Gate 1 (Purity):</strong> <span class="pass">Pass</span></li>
+                                    <li><strong>Gate 2 (Org Rules):</strong> <span class="pass">Pass</span> (No violations)</li>
+                                    <li><strong>Gate 3 (Radius):</strong> <span class="pass">Pass</span></li>
+                                    <li><strong>Gate 4 (Autonomy):</strong> <span class="pass">Pass</span> (Risk Score: 12 &lt; Cap: 25)</li>
+                                </ul>
+                                <code>SHA256: 8f43b29c94...</code>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Sample Event 2: Abstain -->
+                    <div class="event-card">
+                        <div class="event-header">
+                            <span class="badge warning">Abstained</span>
+                            <span class="timestamp">12:30:15 UTC</span>
+                        </div>
+                        <h3>Revoke Security Group Ingress</h3>
+                        <p class="reasoning"><strong>Reasoning:</strong> The action was blocked by the control plane. Gate 2 evaluated Cedar policy ORG-05 and denied the operation.</p>
+                        <details class="crypto-proof">
+                            <summary>Cryptographic Proof & Gates</summary>
+                            <div class="details-content">
+                                <ul>
+                                    <li><strong>Gate 1 (Purity):</strong> <span class="pass">Pass</span></li>
+                                    <li><strong>Gate 2 (Org Rules):</strong> <span class="fail">Fail</span> - <em>"ORG-05: Never revoke 0.0.0.0/0 on public ALBs."</em></li>
+                                    <li><strong>Gate 3 (Radius):</strong> <span class="skip">Skipped</span></li>
+                                    <li><strong>Gate 4 (Autonomy):</strong> <span class="skip">Skipped</span></li>
+                                </ul>
+                                <code>SHA256: 3b9a102d5c...</code>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Health View -->
+            <section id="tab-health" class="tab-pane">
+                <header class="section-header">
+                    <h1>Live System Health</h1>
+                    <p>Real-time ADOT tracking for the Portfolio App & Services.</p>
+                </header>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>Portfolio Latency (p99)</h3>
+                        <div class="value">42 ms</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Error Rate</h3>
+                        <div class="value success">0.01%</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Docs View -->
+            <section id="tab-docs" class="tab-pane">
+                <header class="section-header">
+                    <h1>Documentation</h1>
+                    <p>Project design documents and references.</p>
+                </header>
+                <div class="docs-list">
+                    <a href="/docs/Lockstep-Recall-2-Person-Design (1).pdf" target="_blank" class="doc-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        Lockstep Recall Design PDF
+                    </a>
+                    <a href="/docs/Lockstep-System-Design-and-Team-Plan.pdf" target="_blank" class="doc-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        System Design & Team Plan PDF
+                    </a>
+                    <a href="/docs/ResiliAgent-AWS-Hackathon-Build-Book.pdf" target="_blank" class="doc-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        Hackathon Build Book PDF
+                    </a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

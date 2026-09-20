@@ -56,14 +56,14 @@ class DemoStack(Stack):
 
         payments_container = payments_task.add_container(
             "payments-api",
-            image=ecs.ContainerImage.from_registry("nginx:latest"),
+            image=ecs.ContainerImage.from_asset("services/demo-app/payments"),
             environment={
                 "DYNAMODB_TABLE": table.table_name,
                 "AWS_XRAY_DAEMON_ADDRESS": "127.0.0.1:2000"
             },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs")
         )
-        payments_container.add_port_mappings(ecs.PortMapping(container_port=80))
+        payments_container.add_port_mappings(ecs.PortMapping(container_port=8080))
         table.grant_read_write_data(payments_task.task_role)
         payments_task.task_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("AWSXRayDaemonWriteAccess"))
 
@@ -84,14 +84,14 @@ class DemoStack(Stack):
         )
         web_container = web_task.add_container(
             "web-api",
-            image=ecs.ContainerImage.from_registry("nginx:latest"),
+            image=ecs.ContainerImage.from_asset("services/demo-app/web"),
             environment={
-                "PAYMENTS_API_URL": f"http://{payments_service.service_name}:80", # Use service discovery in a real app, but for now we'll put them behind ALB
+                "PAYMENTS_API_URL": f"http://{payments_service.service_name}:8080", # Use service discovery in a real app, but for now we'll put them behind ALB
                 "AWS_XRAY_DAEMON_ADDRESS": "127.0.0.1:2000"
             },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs")
         )
-        web_container.add_port_mappings(ecs.PortMapping(container_port=80))
+        web_container.add_port_mappings(ecs.PortMapping(container_port=8080))
         web_task.task_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("AWSXRayDaemonWriteAccess"))
         
         web_task.add_container(

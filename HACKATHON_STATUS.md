@@ -18,8 +18,8 @@
 
 4. **Repository Setup**
    - Cleaned up the 96GB recursive `cdk.out` cache issue.
-   - Moved all assets to the external volume (`/run/media/Rune/New Volume/wolverine`).
-   - Successfully initialized the Git repository, rewrote history into 5 logical feature commits, and pushed everything to the `main` branch of `https://github.com/lRunel/wolverine-.git`.
+   - Moved all assets to the external volume (`/run/media/Rune/New Volume/AWSolotl`).
+   - Successfully initialized the Git repository, rewrote history into 5 logical feature commits, and pushed everything to the `main` branch of `https://github.com/lRunel/AWSolotl-.git`.
 
 ## 🚧 Currently In Progress
 - The AWS CloudFormation deployment for `LockstepDemoStack` is actively spinning up.

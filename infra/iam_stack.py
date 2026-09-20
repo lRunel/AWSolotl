@@ -46,23 +46,12 @@ class IamStack(Stack):
         # The narrow mutating set. Only assumable by ControlPlaneRole with an incident ExternalId.
         self.exec_role = iam.Role(
             self, "ExecRole",
-            assumed_by=iam.ArnPrincipal(self.control_plane_role.role_arn),
-            description="Bounded execution role assumed by the Broker"
-        )
-
-        # Restrict ExecRole trust policy to require a specific ExternalId pattern (inc_*)
-        # We will add the exact StringLike condition to the assume role policy.
-        self.exec_role.assume_role_policy.add_statements(
-            iam.PolicyStatement(
-                effect=iam.Effect.ALLOW,
-                principals=[iam.ArnPrincipal(self.control_plane_role.role_arn)],
-                actions=["sts:AssumeRole"],
-                conditions={
-                    "StringLike": {
-                        "sts:ExternalId": "inc_*"
-                    }
+            assumed_by=iam.ArnPrincipal(self.control_plane_role.role_arn).with_conditions({
+                "StringLike": {
+                    "sts:ExternalId": "inc_*"
                 }
-            )
+            }),
+            description="Bounded execution role assumed by the Broker"
         )
 
         # Export Role ARNs to SSM Parameter Store for other stacks to use

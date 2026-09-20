@@ -85,13 +85,15 @@ def append_record(incident_id: str, action: dict, gates: dict, causal_basis: dic
     # Copy to S3 Object Lock bucket
     # S3 Object Lock in COMPLIANCE or GOVERNANCE mode prevents deletion
     s3_key = f"{time.strftime('%Y-%m-%d')}/{n}.json"
+    import datetime
+    retain_until = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=365)
     s3.put_object(
         Bucket=BUCKET_NAME,
         Key=s3_key,
         Body=canonical_json(record),
         ContentType="application/json",
-        ObjectLockMode="GOVERNANCE",
-        ObjectLockRetainUntilDate=time.time() + 86400 # 1 day retention
+        ObjectLockMode="COMPLIANCE",
+        ObjectLockRetainUntilDate=retain_until
     )
     
     return n

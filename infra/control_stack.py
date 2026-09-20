@@ -7,6 +7,7 @@ from aws_cdk import (
     aws_s3 as s3,
     aws_ssm as ssm,
     RemovalPolicy,
+    Duration,
 )
 from constructs import Construct
 
@@ -28,6 +29,7 @@ class ControlStack(Stack):
             object_ownership=s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             object_lock_enabled=True,
+            object_lock_default_retention=s3.ObjectLockRetention.compliance(Duration.days(365)),
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True # Useful for hackathons, but technically contradicts object lock. We will see.
         )
