@@ -15,23 +15,26 @@ the STS broker, the ledger); Person B owns memory and the rules of the game
 (connectors, ingest, entity anchoring, the rule compiler, Gates 2/4,
 causal-lite, the agent, BrakeBench plans).
 
-<!-- OWNER: A -- setup and deploy instructions (branching.md: "A owns
-     setup"). Nothing here yet because infra/, services/demo-app/, and
-     control/orchestrator.py don't exist in this repo yet. Append below
-     this comment once they do; don't restructure what's above it without
-     going through branching.md's shared-path protocol. -->
-
 ## Setup
 
-Not written yet -- there is no CDK stack, demo app, or orchestrator in this
-repo to deploy. The commands below run everything that *does* exist,
-entirely locally, with no AWS account:
+Two ways to run this. Both work with no AWS account.
+
+**Offline test suite** -- proves every gate, connector, and rule invariant:
 
 ```bash
-pip install cedarpy boto3 jsonschema referencing pytest requests
-python -m pytest -q                        # 251 passed, 1 skipped
+pip install cedarpy boto3 jsonschema fastapi uvicorn requests pytest
+python -m pytest -q                        # 262 passed, 1 skipped
 node --test ui/test_rules.mjs ui/test_ask.mjs   # 18 passed
 ```
+
+**Live local demo** -- two real FastAPI microservices, a self-healing
+watchdog that runs the real Gates 1-5 against them, a hash-chained ledger,
+and the dashboard UI, all on your machine. See
+[`docs/RUNNING_LOCALLY.md`](docs/RUNNING_LOCALLY.md) for the two-command
+version and what to try once it's up. When real AWS credentials are
+available, `infra/` (CDK) deploys the same demo app for real, and
+`control/ledger.py` / `control/broker.py` take over from their local-only
+siblings (`control/local_ledger.py`, `control/local_executor.py`).
 
 ## The twelve generic invariants (Gate 2)
 

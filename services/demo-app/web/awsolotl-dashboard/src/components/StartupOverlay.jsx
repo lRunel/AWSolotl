@@ -1,54 +1,44 @@
 import { useEffect, useState } from 'react'
 
-const steps = [
-  'Verifying agent integrity...',
-  'Loading Cedar policies...',
-  'Connecting to ADOT telemetry...',
-  'Ready.'
-]
+// The opening sequence from docs/UI_UX_DESIGN_DOC.md section 4: a line
+// draws across the screen connecting hash-chain nodes, blooms, then the UI
+// settles in. ~1.2s total, done once per session.
+const NODES = [40, 160, 280, 400, 520]
 
 export default function StartupOverlay({ onComplete }) {
-  const [currentStep, setCurrentStep] = useState(0)
+  const [phase, setPhase] = useState('draw')
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStep(prev => {
-        if (prev >= steps.length - 1) {
-          clearInterval(interval)
-          setTimeout(onComplete, 600)
-          return prev
-        }
-        return prev + 1
-      })
-    }, 500)
-    return () => clearInterval(interval)
+    const t1 = setTimeout(() => setPhase('bloom'), 650)
+    const t2 = setTimeout(() => setPhase('reveal'), 950)
+    const t3 = setTimeout(onComplete, 1300)
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [onComplete])
 
   return (
-    <div style={styles.overlay}>
-      <div style={styles.card}>
-        <div style={styles.logoWrap}>
-          <span style={styles.logo}>🦎</span>
-          <h2 style={styles.title}>AWSolotl</h2>
-        </div>
-        <div style={styles.steps}>
-          {steps.map((step, i) => (
-            <div key={i} style={{
-              ...styles.step,
-              opacity: i <= currentStep ? 1 : 0.3,
-              transform: i <= currentStep ? 'translateX(0)' : 'translateX(-8px)',
-              transition: 'all 0.3s ease',
-            }}>
-              <span style={{
-                ...styles.dot,
-                backgroundColor: i < currentStep ? '#5BA4A4'
-                  : i === currentStep ? '#E8746A'
-                  : '#EDE8E0',
-              }} />
-              <span style={styles.stepText}>{step}</span>
-            </div>
-          ))}
-        </div>
+    <div style={{ ...styles.overlay, opacity: phase === 'reveal' ? 0 : 1 }}>
+      <svg width="560" height="40" viewBox="0 0 560 40" style={styles.svg}>
+        <line
+          x1="40" y1="20" x2="520" y2="20"
+          stroke="var(--accent)" strokeWidth="1"
+          style={{
+            strokeDasharray: 480,
+            strokeDashoffset: phase === 'draw' ? 480 : 0,
+            transition: 'stroke-dashoffset 0.6s cubic-bezier(0.16,1,0.3,1)',
+            opacity: phase === 'bloom' ? 0.25 : 0.9,
+          }}
+        />
+        {NODES.map((x, i) => (
+          <circle
+            key={x}
+            cx={x} cy="20" r={phase === 'draw' ? 0 : 3.5}
+            fill={i === NODES.length - 1 ? 'var(--accent)' : 'var(--text-primary)'}
+            style={{ transition: `r 0.25s ease ${i * 0.06}s` }}
+          />
+        ))}
+      </svg>
+      <div className="mono" style={styles.label}>
+        verifying hash chain&hellip;
       </div>
     </div>
   )
@@ -60,50 +50,19 @@ const styles = {
     inset: 0,
     background: 'var(--bg)',
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000,
-  },
-  card: {
-    textAlign: 'center',
-  },
-  logoWrap: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 16,
-    marginBottom: 60,
-  },
-  logo: {
-    fontSize: 64,
-  },
-  title: {
-    fontSize: 48,
-    fontWeight: 800,
-    color: 'var(--text-primary)',
-    letterSpacing: '-0.04em',
-    textTransform: 'uppercase',
-  },
-  steps: {
-    display: 'flex',
     flexDirection: 'column',
-    gap: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 20,
+    zIndex: 1000,
+    transition: 'opacity 0.35s ease',
+    pointerEvents: 'none',
   },
-  step: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 16,
-  },
-  dot: {
-    width: 12,
-    height: 12,
-    borderRadius: '50%',
-    flexShrink: 0,
-  },
-  stepText: {
-    fontSize: 16,
-    color: 'var(--text-secondary)',
-    fontFamily: "'JetBrains Mono', monospace",
+  svg: { overflow: 'visible' },
+  label: {
+    fontSize: 11,
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase',
+    color: 'var(--text-muted)',
   },
 }

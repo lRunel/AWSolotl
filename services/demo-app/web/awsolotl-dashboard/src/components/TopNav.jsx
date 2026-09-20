@@ -1,39 +1,35 @@
-export default function TopNav({ activeTab, setActiveTab }) {
-  const tabs = [
-    { id: 'ledger', label: 'Ledger', icon: '📋' },
-    { id: 'health', label: 'Health', icon: '💓' },
-    { id: 'docs', label: 'Docs', icon: '📄' },
-  ]
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'ledger', label: 'Ledger' },
+  { id: 'ask', label: 'Ask' },
+  { id: 'docs', label: 'Docs' },
+]
 
+export default function TopNav({ activeTab, setActiveTab, connected }) {
   return (
     <header style={styles.nav}>
-      <div style={styles.left}>
-        <div style={styles.logo}>
-          <span style={{ fontSize: 20 }}>🦎</span>
-          <span style={styles.logoText}>AWSolotl</span>
-        </div>
-        <span style={styles.divider}>/</span>
-        <nav style={styles.tabs}>
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                ...styles.tab,
-                ...(activeTab === tab.id ? styles.tabActive : {}),
-              }}
-            >
-              <span>{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
-        </nav>
+      <div style={styles.logo}>
+        <span style={styles.logoMark}>awsaxolotl</span>
+        <sup style={styles.reg}>&reg;</sup>
       </div>
-      <div style={styles.right}>
-        <div style={styles.status}>
-          <span style={styles.statusDot} />
-          <span style={styles.statusText}>All systems nominal</span>
-        </div>
+
+      <nav style={styles.links}>
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            style={{ ...styles.link, ...(activeTab === tab.id ? styles.linkActive : {}) }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </nav>
+
+      <div
+        style={styles.statusPill}
+        title={connected ? 'control-api connected' : 'control-api unreachable'}
+      >
+        <span className="dot" style={{ background: connected ? 'var(--success)' : 'var(--danger)' }} />
       </div>
     </header>
   )
@@ -41,92 +37,46 @@ export default function TopNav({ activeTab, setActiveTab }) {
 
 const styles = {
   nav: {
-    height: 80,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '0 40px',
-    background: 'transparent',
-    position: 'sticky',
-    top: 0,
-    zIndex: 100,
+    maxWidth: 1180,
+    margin: '0 auto',
+    padding: '28px 40px 0',
   },
-  left: {
+  logo: { display: 'flex', alignItems: 'flex-start', gap: 2 },
+  logoMark: {
+    fontFamily: 'var(--font-display)',
+    fontWeight: 800,
+    fontSize: 18,
+    letterSpacing: '-0.01em',
+    color: 'var(--text-primary)',
+  },
+  reg: { fontSize: 10, color: 'var(--text-muted)' },
+  links: {
     display: 'flex',
-    alignItems: 'center',
     gap: 32,
   },
-  logo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-  },
-  logoText: {
-    fontWeight: 800,
-    fontSize: 24,
-    color: 'var(--text-primary)',
-    letterSpacing: '-0.04em',
-    textTransform: 'uppercase',
-  },
-  divider: {
-    color: 'var(--border-hover)',
-    fontSize: 24,
-    userSelect: 'none',
-    fontWeight: 300,
-  },
-  tabs: {
-    display: 'flex',
-    gap: 8,
-  },
-  tab: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    padding: '10px 20px',
-    borderRadius: 100,
-    border: '1px solid rgba(255,255,255,0.05)',
-    background: 'rgba(0,0,0,0.2)',
-    backdropFilter: 'blur(10px)',
+  link: {
+    fontFamily: 'var(--font-ui)',
+    fontSize: 14.5,
+    fontWeight: 500,
     color: 'var(--text-secondary)',
-    fontSize: 14,
-    fontWeight: 600,
+    background: 'none',
+    border: 'none',
     cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    fontFamily: 'inherit',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
+    padding: '6px 0',
+    transition: 'color 0.2s ease',
   },
-  tabActive: {
-    background: 'var(--text-primary)',
-    color: '#000',
-    border: '1px solid var(--text-primary)',
-  },
-  right: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  status: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    padding: '8px 16px',
-    background: 'rgba(0, 255, 170, 0.1)',
-    border: '1px solid rgba(0, 255, 170, 0.2)',
-    backdropFilter: 'blur(10px)',
-    borderRadius: 100,
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
+  linkActive: { color: 'var(--text-primary)', fontWeight: 700 },
+  statusPill: {
+    width: 38,
+    height: 38,
     borderRadius: '50%',
-    background: 'var(--success)',
-    boxShadow: '0 0 10px var(--success)',
-  },
-  statusText: {
-    fontSize: 12,
-    color: 'var(--success)',
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
+    border: '1px solid var(--border-strong)',
+    background: 'var(--surface)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }

@@ -1,33 +1,18 @@
 const docs = [
-  {
-    title: 'Lockstep Recall Design PDF',
-    desc: 'Original 2-person architecture and threat model.',
-    href: '/docs/Lockstep-Recall-2-Person-Design (1).pdf',
-    icon: '📐',
-  },
-  {
-    title: 'System Design & Team Plan PDF',
-    desc: 'Full system design, gate definitions, and sprint plan.',
-    href: '/docs/Lockstep-System-Design-and-Team-Plan.pdf',
-    icon: '🏗️',
-  },
-  {
-    title: 'Hackathon Build Book PDF',
-    desc: 'Pitch deck and build narrative for the AWS hackathon.',
-    href: '/docs/ResiliAgent-AWS-Hackathon-Build-Book.pdf',
-    icon: '📕',
-  },
+  { title: 'Lockstep Recall -- 2-Person Design', desc: 'Original architecture, threat model, and iteration plan.', href: '/docs/Lockstep-Recall-2-Person-Design (1).pdf' },
+  { title: 'System Design & Team Plan', desc: 'Full system design, gate definitions, and sprint plan.', href: '/docs/Lockstep-System-Design-and-Team-Plan.pdf' },
+  { title: 'Hackathon Build Book', desc: 'Pitch deck and build narrative for the AWS hackathon.', href: '/docs/ResiliAgent-AWS-Hackathon-Build-Book.pdf' },
+  { title: 'Hackathon Writeup', desc: 'What shipped, what was cut, and why.', href: '/docs/wemake-hackathon-writeup.pdf' },
 ]
 
 function DocCard({ doc }) {
   return (
-    <a href={doc.href} target="_blank" rel="noopener noreferrer" className="glass-card" style={styles.card}>
-      <span style={styles.icon}>{doc.icon}</span>
+    <a href={doc.href} target="_blank" rel="noopener noreferrer" className="panel panel--interactive" style={styles.card}>
       <div>
         <div style={styles.docTitle}>{doc.title}</div>
         <div style={styles.docDesc}>{doc.desc}</div>
       </div>
-      <span style={styles.arrow}>→</span>
+      <span style={styles.arrow}>&rarr;</span>
     </a>
   )
 }
@@ -36,103 +21,37 @@ export default function Docs() {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h1 className="huge-title">Documentation</h1>
-        <p style={styles.subtitle}>Project design documents and architecture references.</p>
+        <span className="eyebrow">Reference</span>
+        <h1 className="page-title">Documentation</h1>
       </div>
 
       <div style={styles.grid}>
-        {docs.map((doc, i) => <DocCard key={i} doc={doc} />)}
+        {docs.map((doc) => <DocCard key={doc.href} doc={doc} />)}
       </div>
 
-      <div style={styles.infoBox}>
-        <span style={{ fontSize: 20 }}>🦎</span>
-        <div>
-          <div style={styles.infoTitle}>About AWSolotl</div>
-          <p style={styles.infoText}>
-            AWSolotl (formerly Lockstep Recall / ResiliAgent) is an AI-powered autonomous infrastructure 
-            agent with a cryptographic control plane. Every action passes through 5 safety gates before 
-            execution, and every decision is recorded in an immutable, hash-chained ledger.
-          </p>
-        </div>
+      <div className="panel" style={styles.infoBox}>
+        <div style={styles.infoTitle}>About this runtime</div>
+        <p style={styles.infoText}>
+          Lockstep Recall (internally AWSolotl) proves an AI agent's action
+          is safe before it runs, bounds the damage it can do, watches it
+          while it executes, and writes a signed record. Every action passes
+          through five deterministic gates before execution -- no LLM is
+          ever in the enforcement path.
+        </p>
       </div>
     </div>
   )
 }
 
 const styles = {
-  container: {
-    maxWidth: 1000,
-    margin: '0 auto',
-    padding: '40px 24px',
-  },
-  header: {
-    marginBottom: 60,
-  },
-  subtitle: {
-    color: 'var(--text-secondary)',
-    fontSize: 18,
-    marginTop: 12,
-    fontWeight: 500,
-  },
-  grid: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 16,
-  },
-  card: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 24,
-    padding: '32px',
-    textDecoration: 'none',
-    color: 'inherit',
-    transition: 'all 0.3s ease',
-  },
-  icon: {
-    fontSize: 40,
-    flexShrink: 0,
-  },
-  docTitle: {
-    fontWeight: 700,
-    fontSize: 20,
-    marginBottom: 8,
-    color: 'var(--text-primary)',
-    letterSpacing: '-0.02em',
-  },
-  docDesc: {
-    fontSize: 15,
-    color: 'var(--text-secondary)',
-    lineHeight: 1.5,
-  },
-  arrow: {
-    marginLeft: 'auto',
-    fontSize: 24,
-    color: 'var(--text-muted)',
-    flexShrink: 0,
-    transition: 'transform 0.3s ease, color 0.3s ease',
-  },
-  infoBox: {
-    marginTop: 60,
-    display: 'flex',
-    gap: 24,
-    alignItems: 'flex-start',
-    padding: '40px',
-    background: 'rgba(232, 134, 106, 0.1)',
-    border: '1px solid rgba(232, 134, 106, 0.2)',
-    backdropFilter: 'blur(20px)',
-    borderRadius: 'var(--radius)',
-  },
-  infoTitle: {
-    fontWeight: 700,
-    fontSize: 18,
-    marginBottom: 12,
-    color: 'var(--accent)',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-  },
-  infoText: {
-    fontSize: 16,
-    lineHeight: 1.8,
-    color: 'var(--text-secondary)',
-  },
+  container: { maxWidth: 900, margin: '0 auto', padding: '56px 40px 80px' },
+  header: { marginBottom: 44 },
+  grid: { display: 'flex', flexDirection: 'column', gap: 12 },
+  card: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, padding: '24px 28px', textDecoration: 'none', color: 'inherit' },
+  docTitle: { fontWeight: 700, fontSize: 16, marginBottom: 6, color: 'var(--text-primary)', letterSpacing: '-0.01em' },
+  docDesc: { fontSize: 13.5, color: 'var(--text-secondary)', lineHeight: 1.5 },
+  arrow: { fontSize: 20, color: 'var(--text-muted)', flexShrink: 0 },
+  infoBox: { marginTop: 44, padding: '32px 34px' },
+  infoTitle: { fontWeight: 700, fontSize: 13, marginBottom: 12, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.06em' },
+  infoText: { fontSize: 14.5, lineHeight: 1.75, color: 'var(--text-secondary)', maxWidth: 640 },
 }
