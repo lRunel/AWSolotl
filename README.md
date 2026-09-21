@@ -1,4 +1,4 @@
-# Lockstep Recall
+# AWSolotl
 
 Memory-derived, cited, enforceable policy for AI agents acting on AWS.
 Lockstep Recall sits between an AI agent and AWS: it proves an action is
